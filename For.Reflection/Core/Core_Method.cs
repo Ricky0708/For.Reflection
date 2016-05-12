@@ -20,7 +20,7 @@ namespace For.Reflection
         /// </summary>
         /// <param name="T"></param>
         /// <param name="methodName"></param>
-        /// <param name="field"></param>
+        /// <param name="property"></param>
         /// <returns></returns>
         public static MethodInfo MakeMethodInfo(Type T, string methodName, Type[] GenericsType, Type[] ParametersType)
         {
@@ -33,7 +33,7 @@ namespace For.Reflection
                 GenericsType = new Type[] { };
             }
 
-            string keyName = T.FullName + GenericsType.TypesToStringName() + ParametersType.TypesToStringName();
+            string keyName = T.FullName + GenericsType.TypesToStringName() + "Gen" + ParametersType.TypesToStringName() + "Par";
             if (!Caches.IsExist(CacheType.MethodInfo, keyName))
             {
                 Caches.Lock(CacheType.MethodInfo);

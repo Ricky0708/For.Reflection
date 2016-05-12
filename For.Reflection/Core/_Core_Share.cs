@@ -47,6 +47,14 @@ namespace For.Reflection
             return pxpr;
         }
 
+        private static bool CheckIsStaticType(Type T)
+        {
+            if (T.GetConstructor(Type.EmptyTypes) == null && T.IsAbstract && T.IsSealed)
+            {
+                return true;
+            }
+            return false;
+        }
 
         private static Expression[] ConvertParasInfoToExpr(ParameterExpression pxpr, ParameterInfo[] paramsInfo)
         {

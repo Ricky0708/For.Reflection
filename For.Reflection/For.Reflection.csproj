@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Caches.cs" />
+    <Compile Include="Core\Core_PropertyValue.cs" />
     <Compile Include="Core\Enums.cs" />
     <Compile Include="Core\Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

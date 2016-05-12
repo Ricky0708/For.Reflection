@@ -25,15 +25,15 @@ namespace For.Reflection
         /// <summary>
         /// Make type or generic type by assembly and type full name
         /// </summary>
-        /// <param name="typeName">Type name</param>
+        /// <param name="typeFullName">Type name</param>
         /// <param name="assemblyName">Type's assembly name</param>
         /// <param name="genericTypes">Generic types</param>
         /// <returns></returns>
-        public static Type MakeType(string typeName, string assemblyName, params Type[] genericTypes)
+        public static Type MakeType(string typeFullName, string assemblyName, params Type[] genericTypes)
         {
-            return Core.MakeType(Type.GetType(typeName + ", " + assemblyName), genericTypes);
+            return Core.MakeType(Type.GetType(typeFullName + ", " + assemblyName), genericTypes);
         }
-  
+
         public static object CreateInstance(Type T, Type[] argsType, object[] args)
         {
             return Core.GenCreateInstanceDelg(T, argsType)(args);
@@ -56,7 +56,7 @@ namespace For.Reflection
         /// </summary>
         /// <param name="T"></param>
         /// <param name="methodName"></param>
-        /// <param name="field"></param>
+        /// <param name="property"></param>
         /// <returns></returns>
         public static MethodInfo MakeMethodInfo(Type T, string methodName, Type[] GenericsType, Type[] ParametersType)
         {
@@ -81,14 +81,27 @@ namespace For.Reflection
         #endregion
 
         #region Field Value
-        public static void SetFieldValue(this object instance, string fieldName, dynamic value)
+        public static void SetFieldValue(this object instance, string propertyName, dynamic value)
         {
-            Core.GenSetFieldValueDelg(instance, fieldName, value)(instance, fieldName, value);
+            Core.GenSetFieldValueDelg(instance.GetType(), instance.GetType().GetField(propertyName))(instance, value);
         }
 
-        public static object GetFieldValue(this object instance, string fieldName)
+        public static object GetFieldValue(this object instance, string propertyName)
         {
-           
+            return Core.GenGetFieldValueDelg(instance.GetType(), instance.GetType().GetField(propertyName))(instance);
+        }
+
+        #endregion
+
+        #region Property Value
+        public static void SetPropertyValue(this object instance, string propertyName, dynamic value)
+        {
+            Core.GenSetPropertyValueDelg(instance.GetType(), instance.GetType().GetProperty(propertyName))(instance, value);
+        }
+
+        public static object GetPropertyValue(this object instance, string propertyName)
+        {
+            return Core.GenGetPropertyValueDelg(instance.GetType(), instance.GetType().GetProperty(propertyName))(instance);
         }
 
         #endregion

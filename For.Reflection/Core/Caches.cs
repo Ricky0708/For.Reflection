@@ -17,8 +17,11 @@ namespace For.Reflection
         private static Dictionary<string, object> dictionaryMethodInfo = new Dictionary<string, object>();
         private static Dictionary<string, object> dictionaryMethodCall = new Dictionary<string, object>();
 
-        private static Dictionary<string, object> dictionarySetValue = new Dictionary<string, object>();
-        private static Dictionary<string, object> dictionaryGetValue = new Dictionary<string, object>();
+        private static Dictionary<string, object> dictionarySetFieldValue = new Dictionary<string, object>();
+        private static Dictionary<string, object> dictionaryGetFieldValue = new Dictionary<string, object>();
+
+        private static Dictionary<string, object> dictionarySetPropertyValue = new Dictionary<string, object>();
+        private static Dictionary<string, object> dictionaryGetPropertyValue = new Dictionary<string, object>();
 
         /// <summary>
         /// 
@@ -44,11 +47,17 @@ namespace For.Reflection
                     result = dictionaryMethodCall.ContainsKey(key);
                     break;
                 case CacheType.SetFieldValue:
-                    result = dictionarySetValue.ContainsKey(key);
+                    result = dictionarySetFieldValue.ContainsKey(key);
                     break;
                 case CacheType.GetFieldValue:
+                    result = dictionaryGetFieldValue.ContainsKey(key);
+                    break;
                 case CacheType.SetPropertyValue:
+                    result = dictionarySetPropertyValue.ContainsKey(key);
+                    break;
                 case CacheType.GetPropertyValue:
+                    result = dictionaryGetPropertyValue.ContainsKey(key);
+                    break;
                 default:
                     break;
             }
@@ -74,11 +83,17 @@ namespace For.Reflection
                     obj = dictionaryMethodCall[key];
                     break;
                 case CacheType.SetFieldValue:
-                    obj = dictionarySetValue[key];
+                    obj = dictionarySetFieldValue[key];
                     break;
                 case CacheType.GetFieldValue:
+                    obj = dictionaryGetFieldValue[key];
+                    break;
                 case CacheType.SetPropertyValue:
+                    obj = dictionarySetPropertyValue[key];
+                    break;
                 case CacheType.GetPropertyValue:
+                    obj = dictionaryGetPropertyValue[key];
+                    break;
                 default:
                     break;
             }
@@ -102,11 +117,17 @@ namespace For.Reflection
                     dictionaryMethodCall.Add(key, value);
                     break;
                 case CacheType.SetFieldValue:
-                    dictionarySetValue.Add(key, value);
+                    dictionarySetFieldValue.Add(key, value);
                     break;
                 case CacheType.GetFieldValue:
+                    dictionaryGetFieldValue.Add(key, value);
+                    break;
                 case CacheType.SetPropertyValue:
+                    dictionarySetPropertyValue.Add(key, value);
+                    break;
                 case CacheType.GetPropertyValue:
+                    dictionaryGetPropertyValue.Add(key, value);
+                    break;
                 default:
                     break;
             }
@@ -130,11 +151,17 @@ namespace For.Reflection
                     Monitor.Enter(dictionaryMethodCall);
                     break;
                 case CacheType.SetFieldValue:
-                    Monitor.Enter(dictionarySetValue);
+                    Monitor.Enter(dictionarySetFieldValue);
                     break;
                 case CacheType.GetFieldValue:
+                    Monitor.Enter(dictionaryGetFieldValue);
+                    break;
                 case CacheType.SetPropertyValue:
+                    Monitor.Enter(dictionarySetPropertyValue);
+                    break;
                 case CacheType.GetPropertyValue:
+                    Monitor.Enter(dictionaryGetPropertyValue);
+                    break;
                 default:
                     break;
             }
@@ -157,11 +184,17 @@ namespace For.Reflection
                     Monitor.Exit(dictionaryMethodCall);
                     break;
                 case CacheType.SetFieldValue:
-                    Monitor.Exit(dictionarySetValue);
+                    Monitor.Exit(dictionarySetFieldValue);
                     break;
                 case CacheType.GetFieldValue:
+                    Monitor.Exit(dictionaryGetFieldValue);
+                    break;
                 case CacheType.SetPropertyValue:
+                    Monitor.Exit(dictionarySetPropertyValue);
+                    break;
                 case CacheType.GetPropertyValue:
+                    Monitor.Exit(dictionaryGetPropertyValue);
+                    break;
                 default:
                     break;
             }

@@ -11,41 +11,41 @@ namespace For.Reflection
 {
     internal class Refer_NotUse
     {
-        private delegate object EmitCreate();
+        //private delegate object EmitCreate();
 
-        private static void GenericSetActionEmit(object instance, string fieldName, dynamic value)
-        {
-            var field = instance.GetType().GetField(fieldName);
-            var typeName = instance.GetType().Name;
+        //private static void GenericSetActionEmit(object instance, string fieldName, dynamic value)
+        //{
+        //    var field = instance.GetType().GetField(fieldName);
+        //    var typeName = instance.GetType().Name;
 
-            DynamicMethod method = new DynamicMethod("SetField", typeof(void), new Type[] { instance.GetType(), value.GetType() });
-            ILGenerator ilGenerator = method.GetILGenerator();
+        //    DynamicMethod method = new DynamicMethod("SetField", typeof(void), new Type[] { instance.GetType(), value.GetType() });
+        //    ILGenerator ilGenerator = method.GetILGenerator();
 
-            ilGenerator.Emit(OpCodes.Ldarg_0);
-            ilGenerator.Emit(OpCodes.Ldarg_1);
-            ilGenerator.Emit(OpCodes.Box, field.FieldType);
-            ilGenerator.Emit(OpCodes.Unbox_Any, field.FieldType);
-            ilGenerator.Emit(OpCodes.Stfld, field);
-            ilGenerator.Emit(OpCodes.Ret);
-            method.DefineParameter(1, ParameterAttributes.In, "obj");
-            method.DefineParameter(2, ParameterAttributes.In, "value");
-            var delegateType = typeof(Action<,>).MakeGenericType(instance.GetType(), value.GetType());
-            var setAction = method.CreateDelegate(delegateType);
-            Caches.Add(CacheType.SetFieldValue, typeName + fieldName + value.GetType().Name + "_Set", setAction);
-        }
-        private static EmitCreate CreateObject(Type T)
-        {
-            ConstructorInfo emptyConstructor = T.GetConstructor(Type.EmptyTypes);
-            DynamicMethod dynamicMethod = new DynamicMethod("EmitCreate", T, Type.EmptyTypes, T);
-            ILGenerator ilGenerator = dynamicMethod.GetILGenerator();
-            ilGenerator.Emit(OpCodes.Nop);
-            ilGenerator.Emit(OpCodes.Newobj, emptyConstructor);
-            ilGenerator.Emit(OpCodes.Ret);
+        //    ilGenerator.Emit(OpCodes.Ldarg_0);
+        //    ilGenerator.Emit(OpCodes.Ldarg_1);
+        //    ilGenerator.Emit(OpCodes.Box, field.FieldType);
+        //    ilGenerator.Emit(OpCodes.Unbox_Any, field.FieldType);
+        //    ilGenerator.Emit(OpCodes.Stfld, field);
+        //    ilGenerator.Emit(OpCodes.Ret);
+        //    method.DefineParameter(1, ParameterAttributes.In, "obj");
+        //    method.DefineParameter(2, ParameterAttributes.In, "value");
+        //    var delegateType = typeof(Action<,>).MakeGenericType(instance.GetType(), value.GetType());
+        //    var setAction = method.CreateDelegate(delegateType);
+        //    Caches.Add(CacheType.SetFieldValue, typeName + fieldName + value.GetType().Name + "_Set", setAction);
+        //}
+        //private static EmitCreate CreateObject(Type T)
+        //{
+        //    ConstructorInfo emptyConstructor = T.GetConstructor(Type.EmptyTypes);
+        //    DynamicMethod dynamicMethod = new DynamicMethod("EmitCreate", T, Type.EmptyTypes, T);
+        //    ILGenerator ilGenerator = dynamicMethod.GetILGenerator();
+        //    ilGenerator.Emit(OpCodes.Nop);
+        //    ilGenerator.Emit(OpCodes.Newobj, emptyConstructor);
+        //    ilGenerator.Emit(OpCodes.Ret);
 
-            var delegateType = dynamicMethod.CreateDelegate(typeof(EmitCreate));
+        //    var delegateType = dynamicMethod.CreateDelegate(typeof(EmitCreate));
 
-            return ((EmitCreate)delegateType);
-        }
+        //    return ((EmitCreate)delegateType);
+        //}
 
 
         //public static object CreateInstance(Type T, Type[] argsType, object[] args)

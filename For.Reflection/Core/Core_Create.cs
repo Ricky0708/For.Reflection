@@ -35,12 +35,21 @@ namespace For.Reflection
                 {
                     if (!Caches.IsExist(CacheType.Type, keyName))
                     {
+
                         if (genericTypes == null || genericTypes.Count() == 0)
                         {
                             Caches.Add(CacheType.Type, keyName, T);
                         }
                         else
                         {
+                            //static type can not be generic type
+                            foreach (Type type in genericTypes)
+                            {
+                                if (CheckIsStaticType(type))
+                                {
+                                    throw new Exception("static type can not be generic type");
+                                }
+                            }
                             Caches.Add(CacheType.Type, keyName, T.MakeGenericType(genericTypes));
                         }
                     }
@@ -58,7 +67,7 @@ namespace For.Reflection
 
         }
 
-        
+
         public static delgCreateInstance GenCreateInstanceDelg(Type T, Type[] argsType)
         {
 
@@ -77,6 +86,10 @@ namespace For.Reflection
                 {
                     if (!Caches.IsExist(CacheType.Create, keyName))
                     {
+                        if (CheckIsStaticType(T))
+                        {
+                            throw new Exception("Can not create static type");
+                        }
                         ParameterExpression pxpr = Expression.Parameter(typeof(object[]), "args");
                         ConstructorInfo ctorInfo = MakeCtorInfo(T, argsType);
                         Expression[] argsExp = ConvertParasInfoToExpr(pxpr, ctorInfo.GetParameters());

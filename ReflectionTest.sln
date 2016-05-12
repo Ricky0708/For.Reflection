@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReflectionTest", "Reflectio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "For.Reflection", "For.Reflection\For.Reflection.csproj", "{E6510E24-491C-44EA-B792-2A8396E7CB2D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest", "UnitTest\UnitTest.csproj", "{197B3DA1-0C06-4C30-B754-BAE928148D33}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{E6510E24-491C-44EA-B792-2A8396E7CB2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6510E24-491C-44EA-B792-2A8396E7CB2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E6510E24-491C-44EA-B792-2A8396E7CB2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{197B3DA1-0C06-4C30-B754-BAE928148D33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{197B3DA1-0C06-4C30-B754-BAE928148D33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{197B3DA1-0C06-4C30-B754-BAE928148D33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{197B3DA1-0C06-4C30-B754-BAE928148D33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
