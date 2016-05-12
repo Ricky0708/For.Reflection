@@ -22,18 +22,18 @@ namespace For.Reflection
         /// <param name="methodName"></param>
         /// <param name="property"></param>
         /// <returns></returns>
-        public static MethodInfo MakeMethodInfo(Type T, string methodName, Type[] GenericsType, Type[] ParametersType)
+        public static MethodInfo MakeMethodInfo(Type T, string methodName, Type[] genericsType, Type[] parametersType)
         {
-            if (ParametersType == null)
+            if (parametersType == null)
             {
-                ParametersType = new Type[] { };
+                parametersType = new Type[] { };
             }
-            if (GenericsType == null)
+            if (genericsType == null)
             {
-                GenericsType = new Type[] { };
+                genericsType = new Type[] { };
             }
 
-            string keyName = T.FullName + GenericsType.TypesToStringName() + "Gen" + ParametersType.TypesToStringName() + "Par";
+            string keyName = T.FullName + methodName + genericsType.TypesToStringName() + "Gen" + parametersType.TypesToStringName() + "Par";
             if (!Caches.IsExist(CacheType.MethodInfo, keyName))
             {
                 Caches.Lock(CacheType.MethodInfo);
@@ -43,18 +43,18 @@ namespace For.Reflection
                     {
                         var resultTyp = (from p in T.GetMethods()
                                          where p.Name == methodName &&
-                                            (GenericsType.Count() != 0 ?
+                                            (genericsType.Count() != 0 ?
                                                 p.IsGenericMethodDefinition &&
-                                                p.GetGenericArguments().Count() == GenericsType.Count() :
+                                                p.GetGenericArguments().Count() == genericsType.Count() :
                                                 !p.IsGenericMethodDefinition) &&
-                                            p.GetParameters().Count() == ParametersType.Count() &&
-                                            (ParametersType.Count() != 0 ?
-                                                p.GetParameters().Select(n => n.ParameterType).SequenceEqual(ParametersType) : true)
+                                            p.GetParameters().Count() == parametersType.Count() &&
+                                            (parametersType.Count() != 0 ?
+                                                p.GetParameters().Select(n => n.ParameterType).SequenceEqual(parametersType) : true)
                                          select p).FirstOrDefault();
 
                         if (resultTyp.IsGenericMethod)
                         {
-                            resultTyp = resultTyp.MakeGenericMethod(GenericsType);
+                            resultTyp = resultTyp.MakeGenericMethod(genericsType);
 
                         }
                         Caches.Add(CacheType.MethodInfo, keyName, resultTyp);
@@ -79,7 +79,7 @@ namespace For.Reflection
         /// <returns></returns>
         public static delgMethodCall GenMethodCallDelg(object instance, MethodInfo methodInfo)
         {
-            string keyName = methodInfo.ReflectedType.FullName + methodInfo.ToString(); //methodInfo.DeclaringType.FullName + methodInfo.Name + methodInfo.GetParameters().Select(p => p.GetType()).ToArray().TypesToStringName();
+            string keyName = methodInfo.ReflectedType.FullName + methodInfo.ToString() + "method"; //methodInfo.DeclaringType.FullName + methodInfo.Name + methodInfo.GetParameters().Select(p => p.GetType()).ToArray().TypesToStringName();
 
 
             delgMethodCall methodCall;
@@ -120,7 +120,7 @@ namespace For.Reflection
 
         public static delgVoidCall GenVoidCallDelg(object instance, MethodInfo methodInfo)
         {
-            string keyName = methodInfo.ReflectedType.FullName + methodInfo.ToString();//methodInfo.DeclaringType.FullName + methodInfo.Name + methodInfo.GetParameters().Select(p => p.GetType()).ToArray().TypesToStringName();
+            string keyName = methodInfo.ReflectedType.FullName + methodInfo.ToString() + "void";//methodInfo.DeclaringType.FullName + methodInfo.Name + methodInfo.GetParameters().Select(p => p.GetType()).ToArray().TypesToStringName();
             delgVoidCall voidCall;
             if (!Caches.IsExist(CacheType.MethodCall, keyName))
             {
@@ -153,6 +153,7 @@ namespace For.Reflection
                 }
             }
             voidCall = (delgVoidCall)Caches.GetValue(CacheType.MethodCall, keyName);
+
             return voidCall;
         }
     }

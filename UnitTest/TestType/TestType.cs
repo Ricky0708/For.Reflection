@@ -69,16 +69,17 @@ namespace UnitTest.Test
         public void TestVoid()
         {
             GenericTypeName = "No generic";
-            I = "Not params";
         }
 
         public void TestVoid(string first)
         {
+            GenericTypeName = "No generic";
             I = first;
         }
 
         public void TestVoid(string first, string second)
         {
+            GenericTypeName = "No generic";
             I = first + second;
         }
 

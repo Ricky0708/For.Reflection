@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace ReflectionTest
 {
@@ -44,12 +43,10 @@ namespace ReflectionTest
 
         public TestType(string first)
         {
-            MessageBox.Show("No T" + ":" + first);
         }
 
         public TestType(string first, string second)
         {
-            MessageBox.Show("No T" + ":" + first + ":" + second);
         }
         #endregion
 

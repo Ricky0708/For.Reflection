@@ -3,45 +3,50 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace ReflectionTest
 {
-    public static class TestGenericStaticType<T>
+    public static class TestStaticType
     {
         #region Method
         public static string TestGenericTypeWithMethod()
         {
-            return (typeof(T).Name);
+            return ("No T");
+
         }
 
         public static string TestGenericTypeWithMethod(string first)
         {
-            return (typeof(T).Name + ":" + first);
+            return ("No T" + ":" + first);
         }
 
         public static string TestGenericTypeWithMethod(string first, string second)
         {
-            return (typeof(T).Name + ":" + first + ":" + second);
+            return ("No T" + ":" + first + ":" + second);
         }
         #endregion
-        //delegate object ObjectActivator();
+
         #region MethodWithGeneric
         public static string TestGenericTypeWithMethodWithGeneric<O>()
         {
-            return (typeof(T).Name + typeof(O).Name);
+            return ("No T" + typeof(O).Name);
 
         }
 
         public static string TestGenericTypeWithMethodWithGeneric<O>(string first)
         {
-            return (typeof(T).Name + typeof(O).Name + ":" + first);
+            return ("No T" + typeof(O).Name + ":" + first);
         }
 
         public static string TestGenericTypeWithMethodWithGeneric<O>(string first, string second)
         {
-            return (typeof(T).Name + typeof(O).Name + ":" + first + ":" + second);
+            return ("No T" + typeof(O).Name + ":" + first + ":" + second);
         }
         #endregion
+
+        public static void QQ(string pp)
+        {
+            var n = pp;
+        }
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace ReflectionTest
 {
@@ -18,12 +17,10 @@ namespace ReflectionTest
 
         public TestGenericType(string first)
         {
-            MessageBox.Show(typeof(T).Name + ":" + first);
         }
 
         public TestGenericType(string first, string second)
         {
-            MessageBox.Show(typeof(T).Name + ":" + first + ":" + second);
         }
         #endregion
 

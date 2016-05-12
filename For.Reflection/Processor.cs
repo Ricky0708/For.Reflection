@@ -58,9 +58,9 @@ namespace For.Reflection
         /// <param name="methodName"></param>
         /// <param name="property"></param>
         /// <returns></returns>
-        public static MethodInfo MakeMethodInfo(Type T, string methodName, Type[] GenericsType, Type[] ParametersType)
+        public static MethodInfo MakeMethodInfo(Type T, string methodName, Type[] genericsType, Type[] parametersType)
         {
-            return Core.MakeMethodInfo(T, methodName, GenericsType, ParametersType);
+            return Core.MakeMethodInfo(T, methodName, genericsType, parametersType);
         }
 
         public static object MethodCall(object instance, MethodInfo methodInfo, object[] args)
@@ -86,9 +86,9 @@ namespace For.Reflection
             Core.GenSetFieldValueDelg(instance.GetType(), instance.GetType().GetField(propertyName))(instance, value);
         }
 
-        public static object GetFieldValue(this object instance, string propertyName)
+        public static object GetFieldValue(this object instance, string fieldName)
         {
-            return Core.GenGetFieldValueDelg(instance.GetType(), instance.GetType().GetField(propertyName))(instance);
+            return Core.GenGetFieldValueDelg(instance.GetType(), instance.GetType().GetField(fieldName))(instance);
         }
 
         #endregion
