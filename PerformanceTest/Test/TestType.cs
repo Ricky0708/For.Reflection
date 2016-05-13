@@ -53,7 +53,7 @@ namespace ReflectionTest
         #region Method
         public string TestGenericTypeWithMethod()
         {
-            return ("No T");
+            return ("No T" + T);
 
         }
 

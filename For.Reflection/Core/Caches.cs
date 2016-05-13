@@ -24,9 +24,9 @@ namespace For.Reflection
         private static Dictionary<string, object> dictionaryGetPropertyValue = new Dictionary<string, object>();
 
         /// <summary>
-        /// 
+        /// check cache is exist
         /// </summary>
-        /// <param name="cacheEnum"></param>
+        /// <param name="cacheEnum">which cache</param>
         /// <param name="key"></param>
         /// <returns></returns>
         internal static bool IsExist(CacheType cacheEnum, string key)
@@ -63,7 +63,12 @@ namespace For.Reflection
             }
             return result;
         }
-
+        /// <summary>
+        /// get cache
+        /// </summary>
+        /// <param name="cacheEnum"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
         internal static object GetValue(CacheType cacheEnum, string key)
         {
 
@@ -100,6 +105,13 @@ namespace For.Reflection
             return obj;
         }
 
+        /// <summary>
+        /// add to cache
+        /// </summary>
+        /// <param name="cacheEnum"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         internal static object Add(CacheType cacheEnum, string key, object value)
         {
             switch (cacheEnum)
@@ -134,6 +146,10 @@ namespace For.Reflection
             return value;
         }
 
+        /// <summary>
+        /// lock cache, make thread save
+        /// </summary>
+        /// <param name="cacheEnum"></param>
         internal static void Lock(CacheType cacheEnum)
         {
             switch (cacheEnum)
@@ -167,6 +183,10 @@ namespace For.Reflection
             }
         }
 
+        /// <summary>
+        /// unlock cache
+        /// </summary>
+        /// <param name="cacheEnum"></param>
         internal static void Unlock(CacheType cacheEnum)
         {
             switch (cacheEnum)

@@ -34,11 +34,25 @@ namespace For.Reflection
             return Core.MakeType(Type.GetType(typeFullName + ", " + assemblyName), genericTypes);
         }
 
+        /// <summary>
+        /// create instance
+        /// </summary>
+        /// <param name="T">type of instance</param>
+        /// <param name="argsType">if no args, fill in null</param>
+        /// <param name="args">if no args, fill in null</param>
+        /// <returns>object</returns>
         public static object CreateInstance(Type T, Type[] argsType, object[] args)
         {
             return Core.GenCreateInstanceDelg(T, argsType)(args);
         }
 
+        /// <summary>
+        /// create instance
+        /// </summary>
+        /// <typeparam name="T">type of instance</typeparam>
+        /// <param name="argsType">if no args, fill in null</param>
+        /// <param name="args">if no args, fill in null</param>
+        /// <returns>T</returns>
         public static T CreateInstance<T>(Type[] argsType, object[] args)
         {
             object instance = Core.GenCreateInstanceDelg(typeof(T), argsType)(args);
@@ -52,28 +66,56 @@ namespace For.Reflection
 
         #region Method & Void
         /// <summary>
-        /// Get MethodInfo
+        /// make method info
         /// </summary>
-        /// <param name="T"></param>
-        /// <param name="methodName"></param>
-        /// <param name="property"></param>
-        /// <returns></returns>
+        /// <param name="T">type of caller instance</param>
+        /// <param name="methodName">name of method which you will call</param>
+        /// <param name="genericsType">if not generic method, fill in null</param>
+        /// <param name="parametersType">if no any args, fill in null</param>
         public static MethodInfo MakeMethodInfo(Type T, string methodName, Type[] genericsType, Type[] parametersType)
         {
             return Core.MakeMethodInfo(T, methodName, genericsType, parametersType);
         }
 
+        /// <summary>
+        /// method call
+        /// method call have to dynamic compile
+        /// becouse it can't dynamic plug in instance
+        /// if you want get better proformance,use delegate and keep cache by yourself
+        /// </summary>
+        /// <param name="instance">fill null for static type</param>
+        /// <param name="methodInfo">methodinfo</param>
+        /// <param name="args">method args, if no args, fill in null</param>
+        /// <returns>delgMethodCall</returns>
         public static object MethodCall(object instance, MethodInfo methodInfo, object[] args)
         {
             return Core.GenMethodCallDelg(instance, methodInfo)(args);
         }
 
+        /// <summary>
+        /// <see cref="MethodCall(object, MethodInfo, object[])"/>
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="instance"></param>
+        /// <param name="methodInfo"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public static T MethodCall<T>(object instance, MethodInfo methodInfo, object[] args)
         {
             //TODO:Test null
             return (T)Core.GenMethodCallDelg(instance, methodInfo)(args);
         }
 
+        /// <summary>
+        /// delegate void call
+        /// void call have to dynamic compile
+        /// becouse it can't dynamic plug in instance
+        /// if you want get better proformance, keep cache by yourself
+        /// </summary>
+        /// <param name="instance">fill null for static type</param>
+        /// <param name="methodInfo">methodinfo</param>
+        /// <param name="args">void args, if no args, fill in null</param>
+        /// <returns>delgVoidCall</returns>
         public static void VoidCall(object instance, MethodInfo methodInfo, object[] args)
         {
             Core.GenVoidCallDelg(instance, methodInfo)(args);

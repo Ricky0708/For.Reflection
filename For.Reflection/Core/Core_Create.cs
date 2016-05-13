@@ -15,7 +15,12 @@ namespace For.Reflection
     /// </summary>
     public static partial class Core
     {
-
+        /// <summary>
+        /// delegate for create instance
+        /// can not use in static type
+        /// </summary>
+        /// <param name="args">ctor args</param>
+        /// <returns></returns>
         public delegate object delgCreateInstance(params object[] args);
 
         /// <summary>
@@ -50,6 +55,8 @@ namespace For.Reflection
                                     throw new Exception("static type can not be generic type");
                                 }
                             }
+
+                            //add type to cache  
                             Caches.Add(CacheType.Type, keyName, T.MakeGenericType(genericTypes));
                         }
                     }
@@ -63,11 +70,18 @@ namespace For.Reflection
                     Caches.Unlock(CacheType.Type);
                 }
             }
+            //get type from cache
             return (Type)Caches.GetValue(CacheType.Type, keyName);
 
         }
 
 
+        /// <summary>
+        /// make delegate for create instance
+        /// </summary>
+        /// <param name="T">create type</param>
+        /// <param name="argsType">ctor args type</param>
+        /// <returns></returns>
         public static delgCreateInstance GenCreateInstanceDelg(Type T, Type[] argsType)
         {
 
@@ -79,22 +93,24 @@ namespace For.Reflection
             //Delegate instance;
             delgCreateInstance instance;
 
+            //check delegate exist in cache
             if (!Caches.IsExist(CacheType.Create, keyName))
             {
                 Caches.Lock(CacheType.Create);
-                try
-                {
+                try  
+                {          
                     if (!Caches.IsExist(CacheType.Create, keyName))
                     {
                         if (CheckIsStaticType(T))
-                        {
+                        { 
                             throw new Exception("Can not create static type");
                         }
                         ParameterExpression pxpr = Expression.Parameter(typeof(object[]), "args");
                         ConstructorInfo ctorInfo = MakeCtorInfo(T, argsType);
+                        //becouse delegate params is object,so have to make convert expression to real type
                         Expression[] argsExp = ConvertParasInfoToExpr(pxpr, ctorInfo.GetParameters());
                         NewExpression ctor = Expression.New(ctorInfo, argsExp);
-
+                        //create delegate and add to cache
                         instance = (delgCreateInstance)Expression.Lambda(typeof(delgCreateInstance), ctor, pxpr).Compile();
                         Caches.Add(CacheType.Create, keyName, instance);
                     }
@@ -108,7 +124,7 @@ namespace For.Reflection
                     Caches.Unlock(CacheType.Create);
                 }
             }
-
+            //get delegate from cache
             instance = (delgCreateInstance)Caches.GetValue(CacheType.Create, keyName);
             return instance;
         }

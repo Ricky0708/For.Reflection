@@ -11,7 +11,12 @@ namespace For.Reflection
 {
     public static partial class Core
     {
-
+        /// <summary>
+        /// make ctor info for create instance
+        /// </summary>
+        /// <param name="T">type of instance</param>
+        /// <param name="types">types of ctor args type, if no args give it null</param>
+        /// <returns></returns>
         private static ConstructorInfo MakeCtorInfo(Type T, params Type[] types)
         {
             ConstructorInfo result;
@@ -31,6 +36,11 @@ namespace For.Reflection
             return result;
         }
 
+        /// <summary>
+        /// now use know
+        /// </summary>
+        /// <param name="types"></param>
+        /// <returns></returns>
         private static ParameterExpression[] MakeParamsExpression(params Type[] types)
         {
             ParameterExpression[] pxpr = new ParameterExpression[] { };
@@ -47,6 +57,11 @@ namespace For.Reflection
             return pxpr;
         }
 
+        /// <summary>
+        /// check type is static, if yes, this type can not be create or method call by instance
+        /// </summary>
+        /// <param name="T">instance type</param>
+        /// <returns></returns>
         private static bool CheckIsStaticType(Type T)
         {
             if (T.GetConstructor(Type.EmptyTypes) == null && T.IsAbstract && T.IsSealed)
@@ -56,6 +71,12 @@ namespace For.Reflection
             return false;
         }
 
+        /// <summary>
+        /// convert expression type to real type to expression for delegate useage
+        /// </summary>
+        /// <param name="pxpr">empty object[] expresstion</param>
+        /// <param name="paramsInfo">real args paramsInfo</param>
+        /// <returns>args[] Expression</returns>
         private static Expression[] ConvertParasInfoToExpr(ParameterExpression pxpr, ParameterInfo[] paramsInfo)
         {
             Expression[] argsExp = new Expression[paramsInfo.Length];
