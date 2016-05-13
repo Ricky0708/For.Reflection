@@ -55,6 +55,7 @@ namespace For.Reflection
         /// <returns>T</returns>
         public static T CreateInstance<T>(Type[] argsType, object[] args)
         {
+           
             object instance = Core.GenCreateInstanceDelg(typeof(T), argsType)(args);
             if (instance != null)
             {
@@ -89,7 +90,7 @@ namespace For.Reflection
         /// <returns>delgMethodCall</returns>
         public static object MethodCall(object instance, MethodInfo methodInfo, object[] args)
         {
-            return Core.GenMethodCallDelg(instance, methodInfo)(args);
+            return Core.GenMethodCallDelg(methodInfo)(instance, args);
         }
 
         /// <summary>
@@ -103,7 +104,7 @@ namespace For.Reflection
         public static T MethodCall<T>(object instance, MethodInfo methodInfo, object[] args)
         {
             //TODO:Test null
-            return (T)Core.GenMethodCallDelg(instance, methodInfo)(args);
+            return (T)Core.GenMethodCallDelg(methodInfo)(instance, args);
         }
 
         /// <summary>
@@ -118,7 +119,7 @@ namespace For.Reflection
         /// <returns>delgVoidCall</returns>
         public static void VoidCall(object instance, MethodInfo methodInfo, object[] args)
         {
-            Core.GenVoidCallDelg(instance, methodInfo)(args);
+            Core.GenVoidCallDelg(methodInfo)(instance, args);
         }
         #endregion
 

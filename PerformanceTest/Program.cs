@@ -14,20 +14,21 @@ namespace PerformanceTest
     {
         static void Main(string[] args)
         {
-            //Core.delgMethodCall methodCallA;
-            //Core.delgMethodCall methodCallB;
-            //var methodInfo = Core.MakeMethodInfo(typeof(TestType), "TestGenericTypeWithMethod", null, null);
-            //object instance;
-            //object instance2;
-            //instance = Processor.CreateInstance(typeof(TestType), null, null);
-            //instance2 = Processor.CreateInstance(typeof(TestType), null, null);
-            //Processor.SetPropertyValue(instance, "T", "dd");
+            Core.delgMethodCall methodCall;
+            var methodInfo = Core.MakeMethodInfo(typeof(TestType), "TestGenericTypeWithMethod", null, null);
+            object instance;
+            instance = Processor.CreateInstance(typeof(TestType), null, null);
+            Processor.SetPropertyValue(instance, "T", "dd");
+            methodCall = Core.GenMethodCallDelg(methodInfo);
 
+            for (int i = 0; i < 50000; i++)
+            {
+                instance = Processor.CreateInstance(typeof(TestType), null, null);
+                //methodCallA(null);
 
-            //methodCallA = Core.GenMethodCallDelg(instance, methodInfo);
-            //methodCallA(null);
-            //methodCallB = Core.GenMethodCallDelg(instance2, methodInfo);
-            //methodCallB(null);
+                //    instance.GetType().GetMethod("aa").Invoke(instance, null);
+            }
+
 
             TimeSpan ts;
             Stopwatch stopWatch;

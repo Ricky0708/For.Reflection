@@ -17,13 +17,13 @@ namespace For.Reflection
         /// </summary>
         /// <param name="args">method arguments</param>
         /// <returns>method return</returns>
-        public delegate object delgMethodCall(params object[] args);
+        public delegate object delgMethodCall(object instance, params object[] args);
 
         /// <summary>
         /// instance is include in delegate, fill args to call this void
         /// </summary>
         /// <param name="args">void arguments</param>
-        public delegate void delgVoidCall(params object[] args);
+        public delegate void delgVoidCall(object instance, params object[] args);
 
 
         /// <summary>
@@ -93,44 +93,45 @@ namespace For.Reflection
         /// <param name="instance">fill null for static type</param>
         /// <param name="methodInfo">methodinfo</param>
         /// <returns>delgMethodCall</returns>
-        public static delgMethodCall GenMethodCallDelg(object instance, MethodInfo methodInfo)
+        public static delgMethodCall GenMethodCallDelg(MethodInfo methodInfo, params Type[] args)
         {
-
-
-            //string keyName = methodInfo.ReflectedType.FullName + methodInfo.ToString() + "method"; //methodInfo.DeclaringType.FullName + methodInfo.Name + methodInfo.GetParameters().Select(p => p.GetType()).ToArray().TypesToStringName();
+            string keyName = methodInfo.ReflectedType.FullName + methodInfo.ToString() + "method"; //methodInfo.DeclaringType.FullName + methodInfo.Name + methodInfo.GetParameters().Select(p => p.GetType()).ToArray().TypesToStringName();
             delgMethodCall methodCall;
 
-            //if (!Caches.IsExist(CacheType.MethodCall, keyName))
-            //{
-            //    Caches.Lock(CacheType.MethodCall);
-            //    try
-            //    {
-            //        if (!Caches.IsExist(CacheType.MethodCall, keyName))
-            //        {
-            ConstantExpression cxpr = null;
-            if (instance != null)
+            if (!Caches.IsExist(CacheType.MethodCall, keyName))
             {
-                cxpr = Expression.Constant(instance);
+                Caches.Lock(CacheType.MethodCall);
+                try
+                {
+                    if (!Caches.IsExist(CacheType.MethodCall, keyName))
+                    {
+                        ParameterExpression instanceExpr = Expression.Parameter(typeof(object), "target");
+                        ParameterExpression pxpr = Expression.Parameter(typeof(object[]), "args");
+                        Expression[] argsExp = ConvertParasInfoToExpr(pxpr, methodInfo.GetParameters());
+                        MethodCallExpression mxpr;
+                        if (methodInfo.IsStatic)
+                        {
+                            mxpr = Expression.Call(methodInfo, argsExp);
+                        }
+                        else
+                        {
+                            mxpr = Expression.Call(Expression.Convert(instanceExpr, methodInfo.DeclaringType), methodInfo, argsExp);
+                        }
+                        LambdaExpression lambdax = Expression.Lambda(typeof(delgMethodCall), mxpr, instanceExpr, pxpr);
+                        methodCall = (delgMethodCall)lambdax.Compile();
+                        Caches.Add(CacheType.MethodCall, keyName, methodCall);
+                    }
+                }
+                catch
+                {
+                    throw;
+                }
+                finally
+                {
+                    Caches.Unlock(CacheType.MethodCall);
+                }
             }
-            ParameterExpression pxpr = Expression.Parameter(typeof(object[]), "args");
-            Expression[] argsExp = ConvertParasInfoToExpr(pxpr, methodInfo.GetParameters());
-            MethodCallExpression mxpr = Expression.Call(cxpr, methodInfo, argsExp);
-
-            LambdaExpression lambdax = Expression.Lambda(typeof(delgMethodCall), mxpr, pxpr);
-            methodCall = (delgMethodCall)lambdax.Compile();
-            //Caches.Add(CacheType.MethodCall, keyName, methodCall);
-            //        }
-            //    }
-            //    catch
-            //    {
-            //        throw;
-            //    }
-            //    finally
-            //    {
-            //        Caches.Unlock(CacheType.MethodCall);
-            //    }
-            //}
-            //methodCall = (delgMethodCall)Caches.GetValue(CacheType.MethodCall, keyName);
+            methodCall = (delgMethodCall)Caches.GetValue(CacheType.MethodCall, keyName);
             return methodCall;
         }
 
@@ -143,41 +144,44 @@ namespace For.Reflection
         /// <param name="instance">fill null for static type</param>
         /// <param name="methodInfo">methodinfo</param>
         /// <returns>delgVoidCall</returns>
-        public static delgVoidCall GenVoidCallDelg(object instance, MethodInfo methodInfo)
+        public static delgVoidCall GenVoidCallDelg(MethodInfo methodInfo)
         {
-            //string keyName = methodInfo.ReflectedType.FullName + methodInfo.ToString() + "void";//methodInfo.DeclaringType.FullName + methodInfo.Name + methodInfo.GetParameters().Select(p => p.GetType()).ToArray().TypesToStringName();
+            string keyName = methodInfo.ReflectedType.FullName + methodInfo.ToString() + "void";//methodInfo.DeclaringType.FullName + methodInfo.Name + methodInfo.GetParameters().Select(p => p.GetType()).ToArray().TypesToStringName();
             delgVoidCall voidCall;
-            //if (!Caches.IsExist(CacheType.MethodCall, keyName))
-            //{
-            //    Caches.Lock(CacheType.MethodCall);
-            //    try
-            //    {
-            //        if (!Caches.IsExist(CacheType.MethodCall, keyName))
-            //        {
-            ConstantExpression cxpr = null;
-            if (instance != null)
+            if (!Caches.IsExist(CacheType.MethodCall, keyName))
             {
-                cxpr = Expression.Constant(instance);
+                Caches.Lock(CacheType.MethodCall);
+                try
+                {
+                    if (!Caches.IsExist(CacheType.MethodCall, keyName))
+                    {
+                        ParameterExpression instanceExpr = Expression.Parameter(typeof(object), "target");
+                        ParameterExpression pxpr = Expression.Parameter(typeof(object[]), "args");
+                        Expression[] argsExp = ConvertParasInfoToExpr(pxpr, methodInfo.GetParameters());
+                        MethodCallExpression mxpr;
+                        if (methodInfo.IsStatic)
+                        {
+                            mxpr = Expression.Call(methodInfo, argsExp);
+                        }
+                        else
+                        {
+                            mxpr = Expression.Call(Expression.Convert(instanceExpr, methodInfo.DeclaringType), methodInfo, argsExp);
+                        }
+                        LambdaExpression lambdax = Expression.Lambda(typeof(delgVoidCall), mxpr, instanceExpr, pxpr);
+                        voidCall = (delgVoidCall)lambdax.Compile();
+                        Caches.Add(CacheType.MethodCall, keyName, voidCall);
+                    }
+                }
+                catch
+                {
+                    throw;
+                }
+                finally
+                {
+                    Caches.Unlock(CacheType.MethodCall);
+                }
             }
-            ParameterExpression pxpr = Expression.Parameter(typeof(object[]), "args");
-            Expression[] argsExp = ConvertParasInfoToExpr(pxpr, methodInfo.GetParameters());
-            MethodCallExpression mxpr = Expression.Call(cxpr, methodInfo, argsExp);
-
-            LambdaExpression lambdax = Expression.Lambda(typeof(delgVoidCall), mxpr, pxpr);
-            voidCall = (delgVoidCall)lambdax.Compile();
-            //Caches.Add(CacheType.MethodCall, keyName, voidCall);
-            //        }
-            //    }
-            //    catch
-            //    {
-            //        throw;
-            //    }
-            //    finally
-            //    {
-            //        Caches.Unlock(CacheType.MethodCall);
-            //    }
-            //}
-            //voidCall = (delgVoidCall)Caches.GetValue(CacheType.MethodCall, keyName);
+            voidCall = (delgVoidCall)Caches.GetValue(CacheType.MethodCall, keyName);
 
             return voidCall;
         }

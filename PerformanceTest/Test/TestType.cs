@@ -50,6 +50,11 @@ namespace ReflectionTest
         }
         #endregion
 
+        public string aa()
+        {
+            return "aa";
+        }
+
         #region Method
         public string TestGenericTypeWithMethod()
         {
