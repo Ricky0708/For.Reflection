@@ -15,6 +15,7 @@ namespace For.Reflection
         /// <summary>
         /// instance is include in delegate, fill args to call this method
         /// </summary>
+        /// <param name="instance">static object, fill in null</param>
         /// <param name="args">method arguments</param>
         /// <returns>method return</returns>
         public delegate object delgMethodCall(object instance, params object[] args);
@@ -22,6 +23,7 @@ namespace For.Reflection
         /// <summary>
         /// instance is include in delegate, fill args to call this void
         /// </summary>
+        /// <param name="instance">static object, fill in null</param>
         /// <param name="args">void arguments</param>
         public delegate void delgVoidCall(object instance, params object[] args);
 
@@ -86,11 +88,7 @@ namespace For.Reflection
 
         /// <summary>
         /// delegate method call
-        /// method call have to dynamic compile
-        /// becouse it can't dynamic plug in instance
-        /// if you want get better proformance, keep cache by yourself
         /// </summary>
-        /// <param name="instance">fill null for static type</param>
         /// <param name="methodInfo">methodinfo</param>
         /// <returns>delgMethodCall</returns>
         public static delgMethodCall GenMethodCallDelg(MethodInfo methodInfo, params Type[] args)
@@ -137,11 +135,7 @@ namespace For.Reflection
 
         /// <summary>
         /// delegate void call
-        /// void call have to dynamic compile
-        /// becouse it can't dynamic plug in instance
-        /// if you want get better proformance, keep cache by yourself
         /// </summary>
-        /// <param name="instance">fill null for static type</param>
         /// <param name="methodInfo">methodinfo</param>
         /// <returns>delgVoidCall</returns>
         public static delgVoidCall GenVoidCallDelg(MethodInfo methodInfo)

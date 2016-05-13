@@ -80,9 +80,6 @@ namespace For.Reflection
 
         /// <summary>
         /// method call
-        /// method call have to dynamic compile
-        /// becouse it can't dynamic plug in instance
-        /// if you want get better proformance,use delegate and keep cache by yourself
         /// </summary>
         /// <param name="instance">fill null for static type</param>
         /// <param name="methodInfo">methodinfo</param>
@@ -109,9 +106,6 @@ namespace For.Reflection
 
         /// <summary>
         /// delegate void call
-        /// void call have to dynamic compile
-        /// becouse it can't dynamic plug in instance
-        /// if you want get better proformance, keep cache by yourself
         /// </summary>
         /// <param name="instance">fill null for static type</param>
         /// <param name="methodInfo">methodinfo</param>
