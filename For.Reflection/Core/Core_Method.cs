@@ -36,7 +36,7 @@ namespace For.Reflection
         /// <param name="genericsType">if not generic method, fill in null</param>
         /// <param name="parametersType">if no any args, fill in null</param>
         /// <returns></returns>
-        public static MethodInfo MakeMethodInfo(Type T, string methodName, Type[] genericsType, Type[] parametersType)
+        public static MethodInfo MakeMethodInfo(Type T, string methodName, Type[] genericsType = null, Type[] parametersType = null)
         {
             if (parametersType == null)
             {

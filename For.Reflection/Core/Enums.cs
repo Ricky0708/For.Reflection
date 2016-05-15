@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 internal enum CacheType
 {
     Type,
+    CtorInfo,
     Create,
     MethodInfo,
     MethodCall,

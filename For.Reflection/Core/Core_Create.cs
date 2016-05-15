@@ -23,6 +23,8 @@ namespace For.Reflection
         /// <returns></returns>
         public delegate object delgCreateInstance(params object[] args);
 
+
+
         /// <summary>
         /// Make type or generic type by Type
         /// </summary>
@@ -75,6 +77,64 @@ namespace For.Reflection
 
         }
 
+        /// <summary>
+        /// make ctor info for create instance
+        /// </summary>
+        /// <param name="T">type of instance</param>
+        /// <param name="types">types of ctor args type, if no args give it null</param>
+        /// <returns></returns>
+        public static ConstructorInfo MakeCtorInfo(Type T, params Type[] argsType)
+        {
+            string keyName = T.FullName + argsType.TypesToStringName();
+            ConstructorInfo result = null;
+            if (!Caches.IsExist(CacheType.CtorInfo, keyName))
+            {
+                Caches.Lock(CacheType.CtorInfo);
+                try
+                {
+                    if (!Caches.IsExist(CacheType.CtorInfo, keyName))
+                    {
+                        if (CheckIsStaticType(T))
+                        {
+                            throw new ArgumentOutOfRangeException("Can not make ConstructorInfo for static type!");
+                        }
+                        if (argsType != null)
+                        {
+                            result = T.GetConstructor(argsType);
+                        }
+                        else
+                        {
+                            result = T.GetConstructor(new Type[] { });
+                        }
+
+                        if (result == null)
+                        {
+                            throw new ArgumentOutOfRangeException("Can't find Constructor");
+                        }
+                        else
+                        {
+                            Caches.Add(CacheType.CtorInfo, keyName, result);
+                        }
+                    }
+                }
+                catch
+                {
+                    throw;
+                }
+                finally
+                {
+                    Caches.Unlock(CacheType.CtorInfo);
+                }
+
+            }
+            else
+            {
+                result = (ConstructorInfo)Caches.GetValue(CacheType.CtorInfo, keyName);
+
+            }
+            return result;
+        }
+
 
         /// <summary>
         /// make delegate for create instance
@@ -82,14 +142,14 @@ namespace For.Reflection
         /// <param name="T">create type</param>
         /// <param name="argsType">ctor args type</param>
         /// <returns></returns>
-        public static delgCreateInstance GenCreateInstanceDelg(Type T, Type[] argsType)
+        public static delgCreateInstance GenCreateInstanceDelg(ConstructorInfo ctorInfo)
         {
 
-            if (T == null)
+            if (ctorInfo == null)
             {
                 return null;
             }
-            string keyName = T.FullName + argsType.TypesToStringName();
+            string keyName = ctorInfo.ReflectedType.FullName + ctorInfo.ToString();
             //Delegate instance;
             delgCreateInstance instance;
 
@@ -97,16 +157,11 @@ namespace For.Reflection
             if (!Caches.IsExist(CacheType.Create, keyName))
             {
                 Caches.Lock(CacheType.Create);
-                try  
-                {          
+                try
+                {
                     if (!Caches.IsExist(CacheType.Create, keyName))
                     {
-                        if (CheckIsStaticType(T))
-                        { 
-                            throw new Exception("Can not create static type");
-                        }
                         ParameterExpression pxpr = Expression.Parameter(typeof(object[]), "args");
-                        ConstructorInfo ctorInfo = MakeCtorInfo(T, argsType);
                         //becouse delegate params is object,so have to make convert expression to real type
                         Expression[] argsExp = ConvertParasInfoToExpr(pxpr, ctorInfo.GetParameters());
                         NewExpression ctor = Expression.New(ctorInfo, argsExp);

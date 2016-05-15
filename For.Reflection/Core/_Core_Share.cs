@@ -11,30 +11,7 @@ namespace For.Reflection
 {
     public static partial class Core
     {
-        /// <summary>
-        /// make ctor info for create instance
-        /// </summary>
-        /// <param name="T">type of instance</param>
-        /// <param name="types">types of ctor args type, if no args give it null</param>
-        /// <returns></returns>
-        private static ConstructorInfo MakeCtorInfo(Type T, params Type[] types)
-        {
-            ConstructorInfo result;
-            if (types != null)
-            {
-                result = T.GetConstructor(types);
-            }
-            else
-            {
-                result = T.GetConstructor(new Type[] { });
-            }
 
-            if (result == null)
-            {
-                throw new ArgumentOutOfRangeException("Can't find Constructor");
-            }
-            return result;
-        }
 
         /// <summary>
         /// now use know

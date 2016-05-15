@@ -14,24 +14,23 @@ namespace For.Reflection
         /// <summary>
         /// Make type or generic type by Type
         /// </summary>
-        /// <param name="T">Type</param>
+        /// <param name="type">Type</param>
         /// <param name="genericTypes">Generic types</param>
         /// <returns></returns>
-        public static Type MakeType(Type T, params Type[] genericTypes)
+        public static Type MakeType(Type type, params Type[] genericTypes)
         {
-            return Core.MakeType(T, genericTypes);
+            return Core.MakeType(type, genericTypes);
         }
 
         /// <summary>
-        /// Make type or generic type by assembly and type full name
+        /// Make constructor info
         /// </summary>
-        /// <param name="typeFullName">Type name</param>
-        /// <param name="assemblyName">Type's assembly name</param>
-        /// <param name="genericTypes">Generic types</param>
+        /// <param name="type"></param>
+        /// <param name="argsType"></param>
         /// <returns></returns>
-        public static Type MakeType(string typeFullName, string assemblyName, params Type[] genericTypes)
+        public static ConstructorInfo MackCotrInfo(Type type, params Type[] argsType)
         {
-            return Core.MakeType(Type.GetType(typeFullName + ", " + assemblyName), genericTypes);
+            return Core.MakeCtorInfo(type, argsType);
         }
 
         /// <summary>
@@ -43,7 +42,18 @@ namespace For.Reflection
         /// <returns>object</returns>
         public static object CreateInstance(Type T, Type[] argsType, object[] args)
         {
-            return Core.GenCreateInstanceDelg(T, argsType)(args);
+            return Core.GenCreateInstanceDelg(Core.MakeCtorInfo(T, argsType))(args);
+        }
+
+        /// <summary>
+        /// create instance
+        /// </summary>
+        /// <param name="ctorInfo"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static object CreateInstance(ConstructorInfo ctorInfo, params object[] args)
+        {
+            return Core.GenCreateInstanceDelg(ctorInfo)(args);
         }
 
         /// <summary>
@@ -55,8 +65,25 @@ namespace For.Reflection
         /// <returns>T</returns>
         public static T CreateInstance<T>(Type[] argsType, object[] args)
         {
-           
-            object instance = Core.GenCreateInstanceDelg(typeof(T), argsType)(args);
+
+            object instance = Core.GenCreateInstanceDelg(Core.MakeCtorInfo(typeof(T), argsType))(args);
+            if (instance != null)
+            {
+                return (T)instance;
+            }
+            return default(T);
+        }
+
+        /// <summary>
+        /// Create instance
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="ctorInfo"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static T CreateInstance<T>(ConstructorInfo ctorInfo, params object[] args)
+        {
+            object instance = Core.GenCreateInstanceDelg(ctorInfo)(args);
             if (instance != null)
             {
                 return (T)instance;
@@ -85,7 +112,7 @@ namespace For.Reflection
         /// <param name="methodInfo">methodinfo</param>
         /// <param name="args">method args, if no args, fill in null</param>
         /// <returns>delgMethodCall</returns>
-        public static object MethodCall(object instance, MethodInfo methodInfo, object[] args)
+        public static object MethodCall(object instance, MethodInfo methodInfo, params object[] args)
         {
             return Core.GenMethodCallDelg(methodInfo)(instance, args);
         }
@@ -98,7 +125,7 @@ namespace For.Reflection
         /// <param name="methodInfo"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        public static T MethodCall<T>(object instance, MethodInfo methodInfo, object[] args)
+        public static T MethodCall<T>(object instance, MethodInfo methodInfo, params object[] args)
         {
             //TODO:Test null
             return (T)Core.GenMethodCallDelg(methodInfo)(instance, args);
@@ -111,7 +138,7 @@ namespace For.Reflection
         /// <param name="methodInfo">methodinfo</param>
         /// <param name="args">void args, if no args, fill in null</param>
         /// <returns>delgVoidCall</returns>
-        public static void VoidCall(object instance, MethodInfo methodInfo, object[] args)
+        public static void VoidCall(object instance, MethodInfo methodInfo,params object[] args)
         {
             Core.GenVoidCallDelg(methodInfo)(instance, args);
         }

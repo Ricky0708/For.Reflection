@@ -22,25 +22,17 @@ namespace UnitTest.Test
             //test type without generic type 
             type = Processor.MakeType(typeof(TestType), null);
             if (type != typeof(TestType)) Assert.Fail();
-            type = Processor.MakeType("UnitTest.Test.TestType", "UnitTest", null);
-            if (type != typeof(TestType)) Assert.Fail();
 
             //test static type without generic type 
             type = Processor.MakeType(typeof(TestStaticType), null);
-            if (type != typeof(TestStaticType)) Assert.Fail();
-            type = Processor.MakeType("UnitTest.Test.TestStaticType", "UnitTest", null);
             if (type != typeof(TestStaticType)) Assert.Fail();
 
             //test type with generic type 
             type = Processor.MakeType(typeof(TestGenericType<>), typeof(TestType));
             if (type != typeof(TestGenericType<TestType>)) Assert.Fail();
-            type = Processor.MakeType("UnitTest.Test.TestGenericType`1", "UnitTest", typeof(TestType));
-            if (type != typeof(TestGenericType<TestType>)) Assert.Fail();
 
             //test static type with generic type 
             type = Processor.MakeType(typeof(TestGenericStaticType<>), typeof(TestType));
-            if (type != typeof(TestGenericStaticType<TestType>)) Assert.Fail();
-            type = Processor.MakeType("UnitTest.Test.TestGenericStaticType`1", "UnitTest", typeof(TestType));
             if (type != typeof(TestGenericStaticType<TestType>)) Assert.Fail();
         }
 

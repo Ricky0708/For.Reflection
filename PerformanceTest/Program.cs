@@ -72,7 +72,7 @@ namespace PerformanceTest
 
             stopWatch = new Stopwatch();
             stopWatch.Start();
-            Core.delgCreateInstance delgCreate = Core.GenCreateInstanceDelg(typeof(TestType), null);
+            Core.delgCreateInstance delgCreate = Core.GenCreateInstanceDelg(Core.MakeCtorInfo(typeof(TestType), null));
             List<Core.delgSetProperty> setters = new List<Core.delgSetProperty>();
             List<Core.delgGetProperty> getters = new List<Core.delgGetProperty>();
             PropertyInfo[] propertyInfos = fromObj.GetType().GetProperties();

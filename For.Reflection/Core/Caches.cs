@@ -11,6 +11,7 @@ namespace For.Reflection
     {
 
         private static Dictionary<string, object> dictionaryTypes = new Dictionary<string, object>();
+        private static Dictionary<string, object> dictionaryCtorInfo = new Dictionary<string, object>();
         private static Dictionary<string, object> dictionaryCreate = new Dictionary<string, object>();
 
 
@@ -36,6 +37,9 @@ namespace For.Reflection
             {
                 case CacheType.Type:
                     result = dictionaryTypes.ContainsKey(key);
+                    break;
+                case CacheType.CtorInfo:
+                    result = dictionaryCtorInfo.ContainsKey(key);
                     break;
                 case CacheType.Create:
                     result = dictionaryCreate.ContainsKey(key);
@@ -78,6 +82,9 @@ namespace For.Reflection
                 case CacheType.Type:
                     obj = dictionaryTypes[key];
                     break;
+                case CacheType.CtorInfo:
+                    obj = dictionaryCtorInfo[key];
+                    break;
                 case CacheType.Create:
                     obj = dictionaryCreate[key];
                     break;
@@ -119,6 +126,9 @@ namespace For.Reflection
                 case CacheType.Type:
                     dictionaryTypes.Add(key, value);
                     break;
+                case CacheType.CtorInfo:
+                    dictionaryCtorInfo.Add(key, value);
+                    break;
                 case CacheType.Create:
                     dictionaryCreate.Add(key, value);
                     break;
@@ -157,6 +167,9 @@ namespace For.Reflection
                 case CacheType.Type:
                     Monitor.Enter(dictionaryTypes);
                     break;
+                case CacheType.CtorInfo:
+                    Monitor.Enter(dictionaryCtorInfo);
+                    break;
                 case CacheType.Create:
                     Monitor.Enter(dictionaryCreate);
                     break;
@@ -193,6 +206,9 @@ namespace For.Reflection
             {
                 case CacheType.Type:
                     Monitor.Exit(dictionaryTypes);
+                    break;
+                case CacheType.CtorInfo:
+                    Monitor.Exit(dictionaryCtorInfo);
                     break;
                 case CacheType.Create:
                     Monitor.Exit(dictionaryCreate);
