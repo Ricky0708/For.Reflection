@@ -5,9 +5,9 @@ This is a high performance reflection component,<br/>
 you can use it to make your value injector or any component...
 
 # Performance
-* stande call (use namespace **_process_**)
-  * 50,000 records with 11 property from a object inject to a new object cost about 600ms
-* delegate call (use namespace **_core_** to get delegate and call it by yourself) 
+* stande call (use namespace **_TypeProcessor_**)
+  * 50,000 records with 11 property from a object inject to a new object cost about 127ms
+* delegate call (use namespace **_Core_** to get delegate and call it by yourself) 
   * 1,000,000 records cost about 620ms
 
 # Features
@@ -22,13 +22,13 @@ you can use it to make your value injector or any component...
 * using For.Reflection
 * stand call
 ```C#
-            Type o = Processor.MakeType(typeof(TestType));
+            TypeProcessor processor = new TypeProcessor(typeof(TestType));
             for (int i = 0; i < 50000; i++)
             {
-                var ToObj = Processor.CreateInstance(o, null, null);
+                var ToObj = processor.CreateInstance();
                 foreach (PropertyInfo item in fromObj.GetType().GetProperties())
                 {
-                    Processor.SetPropertyValue(ToObj, item.Name, Processor.GetPropertyValue(fromObj, item.Name));
+                    processor.SetProperty(ToObj, item.Name, processor.GetProperty(fromObj, item.Name));
                 }
             }
 ```
@@ -57,5 +57,10 @@ you can use it to make your value injector or any component...
 ```
 
 # History
+* ** V 1.1.0.0**
+  * add new namespace 『TypeProcessor』, and this will be stand call
+  * remove old stand call 『Processor』
+  
+
 * **V 1.0.0.0**
   * Upload component
