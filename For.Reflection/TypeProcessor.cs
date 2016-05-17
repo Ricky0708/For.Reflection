@@ -121,11 +121,7 @@ namespace For.Reflection
         public object GetField(object instance, FieldInfo field)
         {
             string fieldName = field.Name;
-            if (cacheGetField.ContainsKey(fieldName))
-            {
-                return cacheGetField[fieldName](instance);
-            }
-            return null;
+            return GetField(instance, fieldName);
         }
         public object GetField(object instance, string fieldName)
         {
@@ -139,14 +135,7 @@ namespace For.Reflection
         public void SetField(object instance, FieldInfo field, object value)
         {
             string fieldName = field.Name;
-            if (cacheSetField.ContainsKey(fieldName))
-            {
-                cacheSetField[fieldName](instance, value);
-            }
-            else
-            {
-                throw new ArgumentOutOfRangeException(fieldName);
-            }
+            SetField(instance, fieldName, value);
         }
 
         public void SetField(object instance, string fieldName, object value)
@@ -166,11 +155,7 @@ namespace For.Reflection
         public object GetProperty(object instance, PropertyInfo prop)
         {
             string propName = prop.Name;
-            if (cacheGetProperty.ContainsKey(propName))
-            {
-                return cacheGetProperty[propName](instance);
-            }
-            return null;
+            return GetProperty(instance, propName);
         }
 
         public object GetProperty(object instance, string propName)
@@ -185,14 +170,7 @@ namespace For.Reflection
         public void SetProperty(object instance, PropertyInfo prop, object value)
         {
             string propName = prop.Name;
-            if (cacheSetProperty.ContainsKey(propName))
-            {
-                cacheSetProperty[propName](instance, value);
-            }
-            else
-            {
-                throw new ArgumentOutOfRangeException(propName);
-            }
+            SetProperty(instance, propName, value);
         }
 
         public void SetProperty(object instance, string propName, object value)
