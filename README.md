@@ -58,7 +58,7 @@ you can use it to make your value injector or any component...
 
 # History
 
-* ** V 1.1.0.0**
+* **V 1.1.0.0**
   * add new namespace 『TypeProcessor』, and this will be stand call
   * remove old stand call 『Processor』
   
