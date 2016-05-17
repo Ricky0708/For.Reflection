@@ -27,9 +27,6 @@ namespace PerformanceTest
                 instance = processor.CreateInstance();
             }
 
-
-  
-
             object fromObj;
             fromObj = processor.CreateInstance();
             processor.SetProperty(fromObj, "L", new TestType());
@@ -49,7 +46,6 @@ namespace PerformanceTest
             stopWatch.Start();
             for (int i = 0; i < 50000; i++)
             {
-                //Processor.GetPropertyValue(fromObj, "L");
                 var ToObj = processor.CreateInstance();
                 foreach (PropertyInfo item in fromObj.GetType().GetProperties())
                 {
