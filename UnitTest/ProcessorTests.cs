@@ -18,7 +18,6 @@ namespace UnitTest.Test
         public void CreateInstanceTest()
         {
             Type type = typeof(TestType);
-
             CreateInstance(type, null, null, null, null);
             CreateInstance(type, null, null, new[] { typeof(string) }, "AA");
             CreateInstance(type, null, null, new[] { typeof(string), typeof(int) }, "AA", 99);

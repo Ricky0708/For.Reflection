@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace For.Reflection
 {
-    public interface ITypeProcessor
+    interface ITypeProcessor
     {
         
         object CreateInstance(object[] args = null);
