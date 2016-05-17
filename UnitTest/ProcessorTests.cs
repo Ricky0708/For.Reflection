@@ -15,49 +15,25 @@ namespace UnitTest.Test
     {
 
         [TestMethod()]
-        public void MakeTypeTest()
-        {
-            Type type;
-
-            //test type without generic type 
-            type = Processor.MakeType(typeof(TestType), null);
-            if (type != typeof(TestType)) Assert.Fail();
-
-            //test static type without generic type 
-            type = Processor.MakeType(typeof(TestStaticType), null);
-            if (type != typeof(TestStaticType)) Assert.Fail();
-
-            //test type with generic type 
-            type = Processor.MakeType(typeof(TestGenericType<>), typeof(TestType));
-            if (type != typeof(TestGenericType<TestType>)) Assert.Fail();
-
-            //test static type with generic type 
-            type = Processor.MakeType(typeof(TestGenericStaticType<>), typeof(TestType));
-            if (type != typeof(TestGenericStaticType<TestType>)) Assert.Fail();
-        }
-
-        [TestMethod()]
         public void CreateInstanceTest()
         {
-            Type type;
+            Type type = typeof(TestType);
 
-            type = Processor.MakeType(typeof(TestType), null);
-            CreateInstance(type, null, null, null);
-            CreateInstance(type, null, new[] { typeof(string) }, "AA");
-            CreateInstance(type, null, new[] { typeof(string), typeof(int) }, "AA", 99);
+            CreateInstance(type, null, null, null, null);
+            CreateInstance(type, null, null, new[] { typeof(string) }, "AA");
+            CreateInstance(type, null, null, new[] { typeof(string), typeof(int) }, "AA", 99);
 
-
-            type = Processor.MakeType(typeof(TestGenericType<>), new[] { typeof(TestType) });
-            CreateInstance(type, typeof(TestType).Name, null, null);
-            CreateInstance(type, typeof(TestType).Name, new[] { typeof(string) }, "AA");
-            CreateInstance(type, typeof(TestType).Name, new[] { typeof(string), typeof(int) }, "AA", 99);
+            type = typeof(TestGenericType<>);
+            CreateInstance(type, new[] { typeof(TestType) }, typeof(TestType).Name, null, null);
+            CreateInstance(type, new[] { typeof(TestType) }, typeof(TestType).Name, new[] { typeof(string) }, "AA");
+            CreateInstance(type, new[] { typeof(TestType) }, typeof(TestType).Name, new[] { typeof(string), typeof(int) }, "AA", 99);
         }
 
         [TestMethod()]
         public void MethodCallTest()
         {
-            Type type;
-            type = Processor.MakeType(typeof(TestType), null);
+            Type type = typeof(TestType);
+
 
             MethodCall(type, "TestMethod", null, null, null);
             MethodCall(type, "TestMethod", null, new[] { typeof(string) }, "AA");
@@ -68,7 +44,7 @@ namespace UnitTest.Test
             MethodCallWithGenericType(type, "TestMethod", new[] { typeof(string) }, new[] { typeof(string), typeof(string) }, "AA", "BB");
 
             //---------------------------------------------
-            type = Processor.MakeType(typeof(TestGenericType<>), typeof(string));
+            type = typeof(TestGenericType<string>);
             GenericMethodCall(type, "TestMethod", null, null, null);
             GenericMethodCall(type, "TestMethod", null, new[] { typeof(string) }, "AA");
             GenericMethodCall(type, "TestMethod", null, new[] { typeof(string), typeof(string) }, "AA", "BB");
@@ -81,8 +57,7 @@ namespace UnitTest.Test
         [TestMethod()]
         public void VoidCallTest()
         {
-            Type type;
-            type = Processor.MakeType(typeof(TestType), null);
+            Type type = typeof(TestType);
 
             VoidCall(type, "TestVoid", null, null, null);
             VoidCall(type, "TestVoid", null, new[] { typeof(string) }, "AA");
@@ -98,28 +73,28 @@ namespace UnitTest.Test
         {
             Type o;
             object fromObj;
-            o = Processor.MakeType(typeof(TestType));
-            fromObj = Processor.CreateInstance(o, null, null);
-            Processor.SetFieldValue(fromObj, "A", new TestType());
-            Processor.SetFieldValue(fromObj, "B", new TestType());
-            Processor.SetFieldValue(fromObj, "C", new TestType());
-            Processor.SetFieldValue(fromObj, "D", new TestType());
-            Processor.SetFieldValue(fromObj, "E", new TestType());
-            Processor.SetFieldValue(fromObj, "F", new TestType());
-            Processor.SetFieldValue(fromObj, "G", new TestType());
-            Processor.SetFieldValue(fromObj, "H", new TestType());
-            Processor.SetFieldValue(fromObj, "I", "I");
-            Processor.SetFieldValue(fromObj, "J", 99);
-            Processor.SetFieldValue(fromObj, "K", true);
+            TypeProcessor processor = new TypeProcessor(typeof(TestType));
+            fromObj = processor.CreateInstance();
+            processor.SetField(fromObj, "A", new TestType());
+            processor.SetField(fromObj, "B", new TestType());
+            processor.SetField(fromObj, "C", new TestType());
+            processor.SetField(fromObj, "D", new TestType());
+            processor.SetField(fromObj, "E", new TestType());
+            processor.SetField(fromObj, "F", new TestType());
+            processor.SetField(fromObj, "G", new TestType());
+            processor.SetField(fromObj, "H", new TestType());
+            processor.SetField(fromObj, "I", "I");
+            processor.SetField(fromObj, "J", 99);
+            processor.SetField(fromObj, "K", true);
 
 
             for (int i = 0; i < 10; i++)
             {
-                var ToObj = Processor.CreateInstance(o, null, null);
+                var ToObj = processor.CreateInstance();
                 foreach (FieldInfo item in fromObj.GetType().GetFields())
                 {
-                    Processor.SetFieldValue(ToObj, item.Name, Processor.GetFieldValue(fromObj, item.Name));
-                    if (!Processor.GetFieldValue(fromObj, item.Name).Equals(Processor.GetFieldValue(ToObj, item.Name)))
+                    processor.SetField(ToObj, item.Name, processor.GetField(fromObj, item.Name));
+                    if (!processor.GetField(fromObj, item.Name).Equals(processor.GetField(ToObj, item.Name)))
                     {
                         Assert.Fail();
                     }
@@ -132,29 +107,29 @@ namespace UnitTest.Test
         {
             Type o;
             object fromObj;
-            o = Processor.MakeType(typeof(TestType));
-            fromObj = Processor.CreateInstance(o, null, null);
-            Processor.SetPropertyValue(fromObj, "L", new TestType());
-            Processor.SetPropertyValue(fromObj, "M", new TestType());
-            Processor.SetPropertyValue(fromObj, "N", new TestType());
-            Processor.SetPropertyValue(fromObj, "O", new TestType());
-            Processor.SetPropertyValue(fromObj, "P", new TestType());
-            Processor.SetPropertyValue(fromObj, "Q", new TestType());
-            Processor.SetPropertyValue(fromObj, "R", new TestType());
-            Processor.SetPropertyValue(fromObj, "S", new TestType());
-            Processor.SetPropertyValue(fromObj, "T", "I");
-            Processor.SetPropertyValue(fromObj, "U", 99);
-            Processor.SetPropertyValue(fromObj, "V", true);
-            Processor.SetPropertyValue(fromObj, "GenericTypeName", "A");
+            TypeProcessor processor = new TypeProcessor(typeof(TestType));
+            fromObj = processor.CreateInstance();
+            processor.SetProperty(fromObj, "L", new TestType());
+            processor.SetProperty(fromObj, "M", new TestType());
+            processor.SetProperty(fromObj, "N", new TestType());
+            processor.SetProperty(fromObj, "O", new TestType());
+            processor.SetProperty(fromObj, "P", new TestType());
+            processor.SetProperty(fromObj, "Q", new TestType());
+            processor.SetProperty(fromObj, "R", new TestType());
+            processor.SetProperty(fromObj, "S", new TestType());
+            processor.SetProperty(fromObj, "T", "I");
+            processor.SetProperty(fromObj, "U", 99);
+            processor.SetProperty(fromObj, "V", true);
+            processor.SetProperty(fromObj, "GenericTypeName", "A");
 
 
             for (int i = 0; i < 10; i++)
             {
-                var ToObj = Processor.CreateInstance(o, null, null);
+                var ToObj = processor.CreateInstance();
                 foreach (PropertyInfo item in fromObj.GetType().GetProperties())
                 {
-                    Processor.SetPropertyValue(ToObj, item.Name, Processor.GetPropertyValue(fromObj, item.Name));
-                    if (!Processor.GetPropertyValue(fromObj, item.Name).Equals(Processor.GetPropertyValue(ToObj, item.Name)))
+                    processor.SetProperty(ToObj, item.Name, processor.GetProperty(fromObj, item.Name));
+                    if (!processor.GetProperty(fromObj, item.Name).Equals(processor.GetProperty(ToObj, item.Name)))
                     {
                         Assert.Fail();
                     }
@@ -162,6 +137,6 @@ namespace UnitTest.Test
             }
         }
 
-   
+
     }
 }

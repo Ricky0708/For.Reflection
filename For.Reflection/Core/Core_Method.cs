@@ -34,20 +34,20 @@ namespace For.Reflection
         /// <param name="T">type of caller instance</param>
         /// <param name="methodName">name of method which you will call</param>
         /// <param name="genericsType">if not generic method, fill in null</param>
-        /// <param name="parametersType">if no any args, fill in null</param>
+        /// <param name="argsType">if no any args, fill in null</param>
         /// <returns></returns>
-        public static MethodInfo MakeMethodInfo(Type T, string methodName, Type[] genericsType = null, Type[] parametersType = null)
+        public static MethodInfo MakeMethodInfo(Type T, string methodName, Type[] genericsType = null, Type[] argsType = null)
         {
-            if (parametersType == null)
+            if (argsType == null)
             {
-                parametersType = new Type[] { };
+                argsType = new Type[] { };
             }
             if (genericsType == null)
             {
                 genericsType = new Type[] { };
             }
 
-            string keyName = T.FullName + methodName + genericsType.TypesToStringName() + "Gen" + parametersType.TypesToStringName() + "Par";
+            string keyName = T.FullName + methodName + genericsType.TypesToStringName() + "Gen" + argsType.TypesToStringName() + "Par";
             if (!Caches.IsExist(CacheType.MethodInfo, keyName))
             {
                 Caches.Lock(CacheType.MethodInfo);
@@ -61,9 +61,9 @@ namespace For.Reflection
                                                 p.IsGenericMethodDefinition &&
                                                 p.GetGenericArguments().Count() == genericsType.Count() :
                                                 !p.IsGenericMethodDefinition) &&
-                                            p.GetParameters().Count() == parametersType.Count() &&
-                                            (parametersType.Count() != 0 ?
-                                                p.GetParameters().Select(n => n.ParameterType).SequenceEqual(parametersType) : true)
+                                            p.GetParameters().Count() == argsType.Count() &&
+                                            (argsType.Count() != 0 ?
+                                                p.GetParameters().Select(n => n.ParameterType).SequenceEqual(argsType) : true)
                                          select p).FirstOrDefault();
 
                         if (resultTyp.IsGenericMethod)
@@ -91,7 +91,7 @@ namespace For.Reflection
         /// </summary>
         /// <param name="methodInfo">methodinfo</param>
         /// <returns>delgMethodCall</returns>
-        public static delgMethodCall GenMethodCallDelg(MethodInfo methodInfo, params Type[] args)
+        public static delgMethodCall GenMethodCallDelg(MethodInfo methodInfo)
         {
             string keyName = methodInfo.ReflectedType.FullName + methodInfo.ToString() + "method"; //methodInfo.DeclaringType.FullName + methodInfo.Name + methodInfo.GetParameters().Select(p => p.GetType()).ToArray().TypesToStringName();
             delgMethodCall methodCall;

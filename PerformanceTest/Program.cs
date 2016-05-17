@@ -14,49 +14,46 @@ namespace PerformanceTest
     {
         static void Main(string[] args)
         {
-            Core.delgMethodCall methodCall;
-            var methodInfo = Core.MakeMethodInfo(typeof(TestType), "TestGenericTypeWithMethod", null, null);
+            TimeSpan ts;
+            Stopwatch stopWatch;
+
+            TypeProcessor processor = new TypeProcessor(typeof(TestType));
             object instance;
-            instance = Processor.CreateInstance(typeof(TestType), null, null);
-            Processor.SetPropertyValue(instance, "T", "dd");
-            methodCall = Core.GenMethodCallDelg(methodInfo);
+            instance = processor.CreateInstance();
+            processor.SetProperty(instance, "T", "dd");
 
             for (int i = 0; i < 50000; i++)
             {
-                instance = Processor.CreateInstance(typeof(TestType), null, null);
-                //methodCallA(null);
-
-                //    instance.GetType().GetMethod("aa").Invoke(instance, null);
+                instance = processor.CreateInstance();
             }
 
 
-            TimeSpan ts;
-            Stopwatch stopWatch;
-            Type o;
+  
+
             object fromObj;
-            o = Processor.MakeType(typeof(TestType));
-            fromObj = Processor.CreateInstance(o, null, null);
-            Processor.SetPropertyValue(fromObj, "L", new TestType());
-            Processor.SetPropertyValue(fromObj, "M", new TestType());
-            Processor.SetPropertyValue(fromObj, "N", new TestType());
-            Processor.SetPropertyValue(fromObj, "O", new TestType());
-            Processor.SetPropertyValue(fromObj, "P", new TestType());
-            Processor.SetPropertyValue(fromObj, "Q", new TestType());
-            Processor.SetPropertyValue(fromObj, "R", new TestType());
-            Processor.SetPropertyValue(fromObj, "S", new TestType());
-            Processor.SetPropertyValue(fromObj, "T", "I");
-            Processor.SetPropertyValue(fromObj, "U", 99);
-            Processor.SetPropertyValue(fromObj, "V", true);
+            fromObj = processor.CreateInstance();
+            processor.SetProperty(fromObj, "L", new TestType());
+            processor.SetProperty(fromObj, "M", new TestType());
+            processor.SetProperty(fromObj, "N", new TestType());
+            processor.SetProperty(fromObj, "O", new TestType());
+            processor.SetProperty(fromObj, "P", new TestType());
+            processor.SetProperty(fromObj, "Q", new TestType());
+            processor.SetProperty(fromObj, "R", new TestType());
+            processor.SetProperty(fromObj, "S", new TestType());
+            processor.SetProperty(fromObj, "T", "I");
+            processor.SetProperty(fromObj, "U", 99);
+            processor.SetProperty(fromObj, "V", true);
 
 
             stopWatch = new Stopwatch();
             stopWatch.Start();
             for (int i = 0; i < 50000; i++)
             {
-                var ToObj = Processor.CreateInstance(o, null, null);
+                //Processor.GetPropertyValue(fromObj, "L");
+                var ToObj = processor.CreateInstance();
                 foreach (PropertyInfo item in fromObj.GetType().GetProperties())
                 {
-                    Processor.SetPropertyValue(ToObj, item.Name, Processor.GetPropertyValue(fromObj, item.Name));
+                    processor.SetProperty(ToObj, item.Name, processor.GetProperty(fromObj, item.Name));
                 }
             }
             stopWatch.Stop();
@@ -72,11 +69,11 @@ namespace PerformanceTest
 
             stopWatch = new Stopwatch();
             stopWatch.Start();
+            Type o = typeof(TestType);
             Core.delgCreateInstance delgCreate = Core.GenCreateInstanceDelg(Core.MakeCtorInfo(typeof(TestType), null));
             List<Core.delgSetProperty> setters = new List<Core.delgSetProperty>();
             List<Core.delgGetProperty> getters = new List<Core.delgGetProperty>();
             PropertyInfo[] propertyInfos = fromObj.GetType().GetProperties();
-
             for (int i = 0; i < propertyInfos.Count(); i++)
             {
                 setters.Add(Core.GenSetPropertyValueDelg(o, propertyInfos[i]));
@@ -97,8 +94,27 @@ namespace PerformanceTest
             Console.WriteLine("");
             Console.WriteLine("delegate call 10000000 times");
             Console.WriteLine("RunTime: " + ts.ToString() + "ms");
-            Console.ReadLine();
 
+
+            stopWatch = new Stopwatch();
+            stopWatch.Start();
+            PropertyInfo pp = fromObj.GetType().GetProperty("U");
+            Core.delgGetProperty dd = Core.GenGetPropertyValueDelg(o, pp);
+            Core.delgSetProperty xx = Core.GenSetPropertyValueDelg(o, pp);
+            for (int i = 0; i < 1000000; i++)
+            {
+                fromObj = delgCreate();
+                dd(fromObj);
+                
+            }
+
+
+            stopWatch.Stop();
+            ts = stopWatch.Elapsed;
+            Console.WriteLine("");
+            Console.WriteLine("delegate call 10000000 times");
+            Console.WriteLine("RunTime: " + ts.ToString() + "ms");
+            Console.ReadLine();
         }
     }
 }

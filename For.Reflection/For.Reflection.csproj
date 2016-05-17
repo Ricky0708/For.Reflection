@@ -44,13 +44,14 @@
     <Compile Include="Core\Core_PropertyValue.cs" />
     <Compile Include="Core\Enums.cs" />
     <Compile Include="Core\Extensions.cs" />
+    <Compile Include="ITypeProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Refer_NotUse.cs" />
     <Compile Include="Core\Core_FieldValue.cs" />
     <Compile Include="Core\Core_Create.cs" />
     <Compile Include="Core\Core_Method.cs" />
     <Compile Include="Core\_Core_Share.cs" />
-    <Compile Include="Processor.cs" />
+    <Compile Include="TypeProcessor.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

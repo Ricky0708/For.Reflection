@@ -34,6 +34,7 @@ namespace ReflectionTest
         public string T { get; set; }
         public int U { get; set; }
         public bool V { get; set; }
+        internal string z { get; set; }
 
         #region Ctor
         public TestType()

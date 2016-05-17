@@ -13,11 +13,11 @@ namespace UnitTest.Test
     public partial class ProcessorTests
     {
 
-        private void CreateInstance(Type type, string genericTypeName, Type[] argsType, params object[] args)
+        private void CreateInstance(Type type, Type[] genericTypes, string genericTypeName, Type[] argsType, params object[] args)
         {
             object instance;
             string compareResult = "";
-
+            TypeProcessor processor = new TypeProcessor(type, genericTypes, argsType);
             if (args != null)
             {
                 foreach (var item in args)
@@ -26,19 +26,17 @@ namespace UnitTest.Test
                 }
             }
 
-            instance = Processor.CreateInstance(type,
-                argsType,
-                args);
-            if (instance == null || instance.GetType() != type)
+            instance = processor.CreateInstance(args);
+            if (instance == null || instance.GetType().Name != type.Name)
             {
                 Assert.Fail();
             }
             else
             {
-                string reslut = (string)Processor.GetPropertyValue(instance, "T") +
-                      (((int)Processor.GetPropertyValue(instance, "U")).ToString() == "0" ? "" : ((int)Processor.GetPropertyValue(instance, "U")).ToString());
+                string reslut = (string)processor.GetProperty(instance, "T") +
+                      (((int)processor.GetProperty(instance, "U")).ToString() == "0" ? "" : ((int)processor.GetProperty(instance, "U")).ToString());
                 if (reslut != compareResult ||
-                        (string)Processor.GetPropertyValue(instance, "GenericTypeName") != genericTypeName)
+                        (string)processor.GetProperty(instance, "GenericTypeName") != genericTypeName)
                 {
                     Assert.Fail();
                 }
@@ -49,12 +47,11 @@ namespace UnitTest.Test
 
         private void MethodCall(Type type, string methodName, Type[] genericsType, Type[] parametersType, params object[] args)
         {
-            MethodInfo methodInfo;
-            object instance = Processor.CreateInstance(type, null, null);
+            TypeProcessor processor = new TypeProcessor(type, null, null);
+            object instance = processor.CreateInstance(null);
             string result;
             string resultCompare = "No T";
-            methodInfo = Processor.MakeMethodInfo(type, methodName, genericsType, parametersType);
-            result = Processor.MethodCall<string>(instance, methodInfo, args);
+            result = (string)processor.MethodCall(instance, methodName, genericsType, parametersType, args);
             if (args != null)
             {
                 foreach (var item in args)
@@ -68,12 +65,11 @@ namespace UnitTest.Test
 
         private void GenericMethodCall(Type type, string methodName, Type[] genericsType, Type[] parametersType, params object[] args)
         {
-            MethodInfo methodInfo;
-            object instance = Processor.CreateInstance(type, null, null);
+            TypeProcessor processor = new TypeProcessor(type, null, null);
+            object instance = processor.CreateInstance();
             string result;
             string resultCompare = type.GetGenericArguments()[0].Name;
-            methodInfo = Processor.MakeMethodInfo(type, methodName, genericsType, parametersType);
-            result = Processor.MethodCall<string>(instance, methodInfo, args);
+            result = (string)processor.MethodCall(instance, methodName, genericsType, parametersType, args);
             if (args != null)
             {
                 foreach (var item in args)
@@ -88,12 +84,11 @@ namespace UnitTest.Test
 
         private void GenericMethodCallWithGenericType(Type type, string methodName, Type[] genericsType, Type[] parametersType, params object[] args)
         {
-            MethodInfo methodInfo;
-            object instance = Processor.CreateInstance(type, null, null);
+            TypeProcessor processor = new TypeProcessor(type, null, null);
+            object instance = processor.CreateInstance();
             string result;
             string resultCompare = type.GetGenericArguments()[0].Name + genericsType[0].Name;
-            methodInfo = Processor.MakeMethodInfo(type, methodName, genericsType, parametersType);
-            result = Processor.MethodCall<string>(instance, methodInfo, args);
+            result = (string)processor.MethodCall(instance, methodName, genericsType, parametersType, args);
             if (args != null)
             {
                 foreach (var item in args)
@@ -108,12 +103,11 @@ namespace UnitTest.Test
 
         private void MethodCallWithGenericType(Type type, string methodName, Type[] genericsType, Type[] parametersType, params object[] args)
         {
-            MethodInfo methodInfo;
-            object instance = Processor.CreateInstance(type, null, null);
+            TypeProcessor processor = new TypeProcessor(type, null, null);
+            object instance = processor.CreateInstance();
             string result;
             string resultCompare = "No T" + genericsType[0].Name;
-            methodInfo = Processor.MakeMethodInfo(type, methodName, genericsType, parametersType);
-            result = Processor.MethodCall<string>(instance, methodInfo, args);
+            result = (string)processor.MethodCall(instance, methodName, genericsType, parametersType, args);
             if (args != null)
             {
                 foreach (var item in args)
@@ -127,11 +121,10 @@ namespace UnitTest.Test
 
         private void VoidCall(Type type, string methodName, Type[] genericsType, Type[] parametersType, params object[] args)
         {
-            MethodInfo methodInfo;
-            object instance = Processor.CreateInstance(type, null, null);
+            TypeProcessor processor = new TypeProcessor(type, null, null);
+            object instance = processor.CreateInstance();
             string resultCompare = "No generic";
-            methodInfo = Processor.MakeMethodInfo(type, methodName, genericsType, parametersType);
-            Processor.VoidCall(instance, methodInfo, args);
+            processor.VoidCall(instance, methodName, genericsType, parametersType, args);
             if (args != null)
             {
                 foreach (var item in args)
@@ -139,7 +132,7 @@ namespace UnitTest.Test
                     resultCompare += (string)item;
                 }
             }
-            string reslut = (string)Processor.GetPropertyValue(instance, "GenericTypeName") + (string)Processor.GetFieldValue(instance, "I");
+            string reslut = (string)processor.GetProperty(instance, "GenericTypeName") + (string)processor.GetField(instance, "I");
 
             if (reslut != resultCompare)
             {
@@ -150,11 +143,10 @@ namespace UnitTest.Test
 
         private void VoidCallWithGenericType(Type type, string methodName, Type[] genericsType, Type[] parametersType, params object[] args)
         {
-            MethodInfo methodInfo;
-            object instance = Processor.CreateInstance(type, null, null);
+            TypeProcessor processor = new TypeProcessor(type, null, null);
+            object instance = processor.CreateInstance();
             string resultCompare = genericsType[0].Name;
-            methodInfo = Processor.MakeMethodInfo(type, methodName, genericsType, parametersType);
-            Processor.VoidCall(instance, methodInfo, args);
+            processor.VoidCall(instance, methodName, genericsType, parametersType, args);
             if (args != null)
             {
                 foreach (var item in args)
@@ -162,7 +154,7 @@ namespace UnitTest.Test
                     resultCompare += (string)item;
                 }
             }
-            string reslut = (string)Processor.GetPropertyValue(instance, "GenericTypeName") + (string)Processor.GetFieldValue(instance, "I");
+            string reslut = (string)processor.GetProperty(instance, "GenericTypeName") + (string)processor.GetField(instance, "I");
 
             if (reslut != resultCompare)
             {
