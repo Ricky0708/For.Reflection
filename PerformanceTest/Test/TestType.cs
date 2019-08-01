@@ -92,4 +92,24 @@ namespace ReflectionTest
         }
         #endregion
     }
+
+    public class ToTestProfile
+    {
+        public string Name { get; set; }
+        public long Age { get; set; }
+        public int Sex { get; set; }
+        public DateTime Birthday { get; set; }
+        public string Address { get; set; }
+        public decimal Balance { get; set; }
+    }
+
+    public class FromTestProfile
+    {
+        public string Name { get; set; }
+        public string Age { get; set; }
+        public string Sex { get; set; }
+        public string Birthday { get; set; }
+        public string Address { get; set; }
+        public string Balance { get; set; }
+    }
 }

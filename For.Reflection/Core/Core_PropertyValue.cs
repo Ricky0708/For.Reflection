@@ -59,11 +59,34 @@ namespace For.Reflection
                     {
                         ParameterExpression targetExp = Expression.Parameter(typeof(object), "target");
                         ParameterExpression valueExp = Expression.Parameter(typeof(object), "value");
+                        BinaryExpression assignExp;
+
                         MemberExpression propertyExp = Expression.Property(Expression.Convert(targetExp, type), property);
-                        BinaryExpression assignExp = Expression.Assign(propertyExp, Expression.Convert(valueExp, property.PropertyType));
+
+                        var enumName = Enum.GetNames(typeof(TypeCode)).FirstOrDefault(p => p == property.PropertyType.Name);
+                        if (!string.IsNullOrEmpty(enumName))
+                        {
+                            MethodInfo changeTypeMethod = MakeMethodInfo(typeof(Convert), "ChangeType", null, new Type[] { typeof(object), typeof(TypeCode) });
+                            var typeCode = (TypeCode)Enum.Parse(typeof(TypeCode), enumName);
+                            MethodCallExpression callExpressionReturningObject = Expression.Call(changeTypeMethod, valueExp,
+                                Expression.Constant(typeCode));
+                            assignExp = Expression.Assign(propertyExp, Expression.Convert(callExpressionReturningObject, property.PropertyType));
+                        }
+                        else
+                        {
+                            assignExp = Expression.Assign(propertyExp, Expression.Convert(valueExp, property.PropertyType));
+                        }
                         LambdaExpression lambdax = Expression.Lambda(typeof(delgSetProperty), assignExp, targetExp, valueExp);
                         delgSetProperty delg = (delgSetProperty)lambdax.Compile();
                         Caches.Add(CacheType.SetPropertyValue, keyName, delg);
+
+                        //ParameterExpression targetExp = Expression.Parameter(typeof(object), "target");
+                        //ParameterExpression valueExp = Expression.Parameter(typeof(object), "value");
+                        //MemberExpression propertyExp = Expression.Property(Expression.Convert(targetExp, type), property);
+                        //BinaryExpression assignExp = Expression.Assign(propertyExp, Expression.Convert(valueExp, property.PropertyType));
+                        //LambdaExpression lambdax = Expression.Lambda(typeof(delgSetProperty), assignExp, targetExp, valueExp);
+                        //delgSetProperty delg = (delgSetProperty)lambdax.Compile();
+                        //Caches.Add(CacheType.SetPropertyValue, keyName, delg);
                     }
                     catch
                     {

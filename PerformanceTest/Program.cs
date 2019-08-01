@@ -14,21 +14,63 @@ namespace PerformanceTest
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("This is a inject property value test");
+            Console.WriteLine("from a class has 11 property, and 8 complex properties and 3 basic properties");
+            Console.WriteLine("below is the test result...");
+            Console.WriteLine("");
+            Console.WriteLine("");
+
+            StandardCallProfileWithTypeConvert();
+            TypeReflection();
+            StandardCall();
+            DelegateCall();
+            DelegateCallB();
+
+            Console.ReadLine();
+        }
+        static void StandardCallProfileWithTypeConvert()
+        {
             TimeSpan ts;
             Stopwatch stopWatch;
-
-            TypeProcessor processor = new TypeProcessor(typeof(TestType));
-            object instance;
-            instance = processor.CreateInstance();
-            processor.SetProperty(instance, "T", "dd");
-
-            for (int i = 0; i < 50000; i++)
+            TypeProcessor processor = new TypeProcessor(typeof(ToTestProfile));
+            TypeProcessor processorFrom = new TypeProcessor(typeof(FromTestProfile));
+            var fromObj = new FromTestProfile()
             {
-                instance = processor.CreateInstance();
-            }
+                Address = "AF",
+                Age = "18",
+                Balance = "2000",
+                Birthday = DateTime.Today.ToString("yyyy/MM/dd"),
+                Name = "Ricky",
+                Sex = "1"
+            };
 
-            object fromObj;
-            fromObj = processor.CreateInstance();
+            stopWatch = new Stopwatch();
+            stopWatch.Start();
+            for (int i = 0; i < 1000000; i++)
+            {
+                var ToObj = processor.CreateInstance();
+                foreach (PropertyInfo item in fromObj.GetType().GetProperties())
+                {
+                    processor.SetProperty(ToObj, item.Name, processorFrom.GetProperty(fromObj, item.Name));
+                }
+            }
+            stopWatch.Stop();
+            ts = stopWatch.Elapsed;
+
+
+            Console.WriteLine("");
+            Console.WriteLine("stand call profile 1000000 times");
+            Console.WriteLine("RunTime: " + ts.ToString() + "ms");
+
+        }
+        static void StandardCall()
+        {
+            TimeSpan ts;
+            Stopwatch stopWatch;
+            TypeProcessor processor = new TypeProcessor(typeof(TestType));
+            var fromObj = processor.CreateInstance();
+
+            //processor.SetProperty(instance, "T", "dd");
             processor.SetProperty(fromObj, "L", new TestType());
             processor.SetProperty(fromObj, "M", new TestType());
             processor.SetProperty(fromObj, "N", new TestType());
@@ -44,7 +86,7 @@ namespace PerformanceTest
 
             stopWatch = new Stopwatch();
             stopWatch.Start();
-            for (int i = 0; i < 50000; i++)
+            for (int i = 0; i < 1000000; i++)
             {
                 var ToObj = processor.CreateInstance();
                 foreach (PropertyInfo item in fromObj.GetType().GetProperties())
@@ -54,16 +96,67 @@ namespace PerformanceTest
             }
             stopWatch.Stop();
             ts = stopWatch.Elapsed;
-            Console.WriteLine("This is a inject property value test");
-            Console.WriteLine("from a class has 11 property, and 8 complex properties and 3 basic properties");
-            Console.WriteLine("below is the test result...");
-            Console.WriteLine("");
-            Console.WriteLine("");
 
-            Console.WriteLine("stand call 50000 times");
+
+            Console.WriteLine("");
+            Console.WriteLine("stand call 1000000 times");
             Console.WriteLine("RunTime: " + ts.ToString() + "ms");
+        }
+        static void TypeReflection()
+        {
+            TimeSpan ts;
+            Stopwatch stopWatch;
+            TypeProcessor processor = new TypeProcessor(typeof(ToTestProfile));
+            var fromObj = new ToTestProfile()
+            {
+                Address = "AF",
+                Age = 18,
+                Balance = 2000,
+                Birthday = DateTime.Today,
+                Name = "Ricky",
+                Sex = 1
+            };
 
             stopWatch = new Stopwatch();
+            stopWatch.Start();
+            for (int i = 0; i < 1000000; i++)
+            {
+                var ToObj = processor.CreateInstance();
+                foreach (PropertyInfo item in fromObj.GetType().GetProperties())
+                {
+                    item.SetValue(ToObj, item.GetValue(fromObj));
+                    //processor.SetProperty(ToObj, item.Name, processorFrom.GetProperty(fromObj, item.Name));
+                }
+            }
+            stopWatch.Stop();
+            ts = stopWatch.Elapsed;
+
+
+            Console.WriteLine("");
+            Console.WriteLine("type reflection profile 1000000 times");
+            Console.WriteLine("RunTime: " + ts.ToString() + "ms");
+        }
+
+
+        static void DelegateCall()
+        {
+            TimeSpan ts;
+            Stopwatch stopWatch;
+            TypeProcessor processor = new TypeProcessor(typeof(TestType));
+            stopWatch = new Stopwatch();
+            object fromObj = processor.CreateInstance();
+            processor.SetProperty(fromObj, "L", new TestType());
+            processor.SetProperty(fromObj, "M", new TestType());
+            processor.SetProperty(fromObj, "N", new TestType());
+            processor.SetProperty(fromObj, "O", new TestType());
+            processor.SetProperty(fromObj, "P", new TestType());
+            processor.SetProperty(fromObj, "Q", new TestType());
+            processor.SetProperty(fromObj, "R", new TestType());
+            processor.SetProperty(fromObj, "S", new TestType());
+            processor.SetProperty(fromObj, "T", "I");
+            processor.SetProperty(fromObj, "U", 99);
+            processor.SetProperty(fromObj, "V", true);
+
             stopWatch.Start();
             Type o = typeof(TestType);
             Core.delgCreateInstance delgCreate = Core.GenCreateInstanceDelg(Core.MakeCtorInfo(typeof(TestType), null));
@@ -90,7 +183,17 @@ namespace PerformanceTest
             Console.WriteLine("");
             Console.WriteLine("delegate call 10000000 times");
             Console.WriteLine("RunTime: " + ts.ToString() + "ms");
+        }
 
+        static void DelegateCallB()
+        {
+            TimeSpan ts;
+            Stopwatch stopWatch;
+            TypeProcessor processor = new TypeProcessor(typeof(TestType));
+            stopWatch = new Stopwatch();
+            object fromObj = processor.CreateInstance();
+            Core.delgCreateInstance delgCreate = Core.GenCreateInstanceDelg(Core.MakeCtorInfo(typeof(TestType), null));
+            Type o = typeof(TestType);
 
             stopWatch = new Stopwatch();
             stopWatch.Start();
@@ -101,16 +204,15 @@ namespace PerformanceTest
             {
                 fromObj = delgCreate();
                 dd(fromObj);
-                
-            }
 
+            }
 
             stopWatch.Stop();
             ts = stopWatch.Elapsed;
             Console.WriteLine("");
             Console.WriteLine("delegate call 10000000 times");
             Console.WriteLine("RunTime: " + ts.ToString() + "ms");
-            Console.ReadLine();
         }
+
     }
 }
