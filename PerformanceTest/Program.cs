@@ -21,14 +21,14 @@ namespace PerformanceTest
             Console.WriteLine("");
             Console.WriteLine("");
 
-            JsonProfile();
-            AssginByProfileCode();
-            DelegateCallProfile();
+            //JsonProfile();
+            //AssginByProfileCode();
+            //DelegateCallProfile();
             StandardCallProfileWithTypeConvert();
-            TypeReflection();
-            StandardCall();
-            DelegateCall();
-            DelegateCallB();
+            //TypeReflection();
+            //StandardCall();
+            //DelegateCall();
+            //DelegateCallB();
 
             Console.ReadLine();
         }
