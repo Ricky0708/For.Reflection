@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace For.Reflection
 {
-    public class TypeProcessor : ITypeProcessor
+    public class TypeProcessor<T> : ITypeProcessor<T>
     {
         #region var
         private Type instanceType;
@@ -20,17 +20,16 @@ namespace For.Reflection
         #endregion
 
         #region ctor
-
         /// <summary>
         /// Construct TypeProcessor
         /// </summary>
         /// <param name="type">type of instance</param>
         /// <param name="genericTypes">generic type of type</param>
         /// <param name="argsType">args type of type</param>
-        public TypeProcessor(Type type, Type[] genericTypes = null, Type[] argsType = null)
+        public TypeProcessor(Type[] genericTypes = null, Type[] argsType = null)
         {
             //init type setting
-            init(type, genericTypes, argsType);
+            init(typeof(T), genericTypes, argsType);
         }
 
         /// <summary>
@@ -80,9 +79,9 @@ namespace For.Reflection
         /// </summary>
         /// <param name="args">construct args</param>
         /// <returns>new instance</returns>
-        public object CreateInstance(object[] args = null)
+        public T CreateInstance(object[] args = null)
         {
-            return delgCreate(args);
+            return (T)delgCreate(args);
         }
 
         /// <summary>

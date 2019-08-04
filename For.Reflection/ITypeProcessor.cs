@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace For.Reflection
 {
-    interface ITypeProcessor
+    interface ITypeProcessor<T>
     {
         
-        object CreateInstance(object[] args = null);
+        T CreateInstance(object[] args = null);
         object MethodCall(object instance, string methodName, Type[] genericsType, Type[] argsType, object[] args);
         void VoidCall(object instance, string voidName, Type[] genericsType, Type[] argsType, object[] args);
 
