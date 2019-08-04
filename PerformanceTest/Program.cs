@@ -106,8 +106,7 @@ namespace PerformanceTest
         {
             TimeSpan ts;
             Stopwatch stopWatch;
-            var processor = new TypeProcessor<ToTestProfile>();
-            var processorFrom = new TypeProcessor<FromTestProfile>();
+   
             var fromObj = new FromTestProfile()
             {
                 Address = "AF",
@@ -122,10 +121,12 @@ namespace PerformanceTest
             stopWatch.Start();
             for (int i = 0; i < 1000000; i++)
             {
-                var ToObj = processor.CreateInstance();
+                var processorTo = new TypeProcessor<ToTestProfile>();
+                var processorFrom = new TypeProcessor<FromTestProfile>();
+                var ToObj = processorTo.CreateInstance();
                 foreach (PropertyInfo item in fromObj.GetType().GetProperties())
                 {
-                    processor.SetProperty(ToObj, item.Name, processorFrom.GetProperty(fromObj, item.Name));
+                    processorTo.SetProperty(ToObj, item.Name, processorFrom.GetProperty(fromObj, item.Name));
                 }
             }
             stopWatch.Stop();
@@ -133,7 +134,7 @@ namespace PerformanceTest
 
 
             Console.WriteLine("");
-            Console.WriteLine("stand call profile 1000000 times");
+            Console.WriteLine("stand call profile with convert 1000000 times");
             Console.WriteLine("RunTime: " + ts.ToString() + "ms");
 
         }

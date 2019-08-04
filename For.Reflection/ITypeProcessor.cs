@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 
 namespace For.Reflection
 {
-    interface ITypeProcessor<T>
+    internal interface ITypeProcessor
     {
-        
-        T CreateInstance(object[] args = null);
         object MethodCall(object instance, string methodName, Type[] genericsType, Type[] argsType, object[] args);
         void VoidCall(object instance, string voidName, Type[] genericsType, Type[] argsType, object[] args);
 
@@ -23,5 +21,12 @@ namespace For.Reflection
         object GetField(object instance, string fieldName);
         void SetField(object instance, FieldInfo field, object value);
         void SetField(object instance, string fieldName, object value);
+    }
+
+    interface ITypeProcessor<T> : ITypeProcessor
+    {
+
+        T CreateInstance(object[] args = null);
+
     }
 }

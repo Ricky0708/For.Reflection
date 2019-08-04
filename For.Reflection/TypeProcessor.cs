@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -13,10 +14,14 @@ namespace For.Reflection
         private Type instanceType;
         private ConstructorInfo ctorInfo;
         private Core.delgCreateInstance delgCreate;
+        private Hashtable o = new Hashtable();
         private Dictionary<string, Core.delgGetProperty> cacheGetProperty = new Dictionary<string, Core.delgGetProperty>();
         private Dictionary<string, Core.delgSetProperty> cacheSetProperty = new Dictionary<string, Core.delgSetProperty>();
         private Dictionary<string, Core.delgGetField> cacheGetField = new Dictionary<string, Core.delgGetField>();
         private Dictionary<string, Core.delgSetField> cacheSetField = new Dictionary<string, Core.delgSetField>();
+        //private static Dictionary<Type, ITypeProcessor> _cache = new Dictionary<Type, ITypeProcessor>();
+        private static object _lockObj = new object();
+        private static TypeProcessor<T> _thisInstance;
         #endregion
 
         #region ctor
@@ -25,11 +30,20 @@ namespace For.Reflection
         /// </summary>
         /// <param name="type">type of instance</param>
         /// <param name="genericTypes">generic type of type</param>
-        /// <param name="argsType">args type of type</param>
-        public TypeProcessor(Type[] genericTypes = null, Type[] argsType = null)
+        /// <param name="argsTypes">args type of type</param>
+        public TypeProcessor(Type[] genericTypes = null, Type[] argsTypes = null)
         {
-            //init type setting
-            init(typeof(T), genericTypes, argsType);
+            if (_thisInstance == null)
+            {
+                lock (_lockObj)
+                {
+                    if (_thisInstance == null)
+                    {
+                        _thisInstance = this;
+                        init(typeof(T), genericTypes, argsTypes);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -40,34 +54,34 @@ namespace For.Reflection
         /// <param name="argsType">args type of type</param>
         private void init(Type type, Type[] genericTypes, Type[] argsType)
         {
-            instanceType = Core.MakeType(type, genericTypes); // make type and cache it
-            ctorInfo = Core.MakeCtorInfo(instanceType, argsType); // make construct info and cache it
-            delgCreate = Core.GenCreateInstanceDelg(ctorInfo); // make delegate create and cache it
+            _thisInstance.instanceType = Core.MakeType(type, genericTypes); // make type and cache it
+            _thisInstance.ctorInfo = Core.MakeCtorInfo(_thisInstance.instanceType, argsType); // make construct info and cache it
+            _thisInstance.delgCreate = Core.GenCreateInstanceDelg(_thisInstance.ctorInfo); // make delegate create and cache it
 
             //make property operator caches
-            PropertyInfo[] props = instanceType.GetProperties();
+            PropertyInfo[] props = _thisInstance.instanceType.GetProperties();
             foreach (PropertyInfo prop in props)
             {
                 if (prop.CanRead)
                 {
-                    Core.delgGetProperty delgGetProperty = Core.GenGetPropertyValueDelg(instanceType, prop);
-                    cacheGetProperty.Add(prop.Name, delgGetProperty);
+                    Core.delgGetProperty delgGetProperty = Core.GenGetPropertyValueDelg(_thisInstance.instanceType, prop);
+                    _thisInstance.cacheGetProperty.Add(prop.Name, delgGetProperty);
                 }
                 if (prop.CanWrite)
                 {
-                    Core.delgSetProperty delgSetProperty = Core.GenSetPropertyValueDelg(instanceType, prop);
-                    cacheSetProperty.Add(prop.Name, delgSetProperty);
+                    Core.delgSetProperty delgSetProperty = Core.GenSetPropertyValueDelg(_thisInstance.instanceType, prop);
+                    _thisInstance.cacheSetProperty.Add(prop.Name, delgSetProperty);
                 }
             }
 
             //make field operator caches
-            FieldInfo[] fields = instanceType.GetFields();
+            FieldInfo[] fields = _thisInstance.instanceType.GetFields();
             foreach (FieldInfo field in fields)
             {
-                Core.delgGetField delgGetField = Core.GenGetFieldValueDelg(instanceType, field);
-                Core.delgSetField delgSetField = Core.GenSetFieldValueDelg(instanceType, field);
-                cacheGetField.Add(field.Name, delgGetField);
-                cacheSetField.Add(field.Name, delgSetField);
+                Core.delgGetField delgGetField = Core.GenGetFieldValueDelg(_thisInstance.instanceType, field);
+                Core.delgSetField delgSetField = Core.GenSetFieldValueDelg(_thisInstance.instanceType, field);
+                _thisInstance.cacheGetField.Add(field.Name, delgGetField);
+                _thisInstance.cacheSetField.Add(field.Name, delgSetField);
             }
         }
 
@@ -81,7 +95,7 @@ namespace For.Reflection
         /// <returns>new instance</returns>
         public T CreateInstance(object[] args = null)
         {
-            return (T)delgCreate(args);
+            return (T)_thisInstance.delgCreate(args);
         }
 
         /// <summary>
@@ -94,7 +108,7 @@ namespace For.Reflection
         /// <returns></returns>
         public object MethodCall(object instance, string methodName, Type[] genericsType = null, Type[] argsType = null, object[] args = null)
         {
-            MethodInfo methodInfo = Core.MakeMethodInfo(instanceType, methodName, genericsType, argsType);
+            MethodInfo methodInfo = Core.MakeMethodInfo(_thisInstance.instanceType, methodName, genericsType, argsType);
             Core.delgMethodCall delg = Core.GenMethodCallDelg(methodInfo);
             return delg(instance, args);
         }
@@ -108,7 +122,7 @@ namespace For.Reflection
         /// <param name="args">args of void call</param>
         public void VoidCall(object instance, string voidName, Type[] genericsType = null, Type[] argsType = null, object[] args = null)
         {
-            MethodInfo methodInfo = Core.MakeMethodInfo(instanceType, voidName, genericsType, argsType);
+            MethodInfo methodInfo = Core.MakeMethodInfo(_thisInstance.instanceType, voidName, genericsType, argsType);
             Core.delgVoidCall delg = Core.GenVoidCallDelg(methodInfo);
             delg(instance, args);
         }
@@ -119,69 +133,44 @@ namespace For.Reflection
 
         public object GetField(object instance, FieldInfo field)
         {
-            string fieldName = field.Name;
-            return GetField(instance, fieldName);
+            return _thisInstance.GetField(instance, field.Name);
         }
         public object GetField(object instance, string fieldName)
         {
-            if (cacheGetField.ContainsKey(fieldName))
-            {
-                return cacheGetField[fieldName](instance);
-            }
-            return null;
+            return _thisInstance.cacheGetField[fieldName](instance);
         }
 
         public void SetField(object instance, FieldInfo field, object value)
         {
-            string fieldName = field.Name;
-            SetField(instance, fieldName, value);
+            _thisInstance.SetField(instance, field.Name, value);
         }
 
         public void SetField(object instance, string fieldName, object value)
         {
-            if (cacheSetField.ContainsKey(fieldName))
-            {
-                cacheSetField[fieldName](instance, value);
-            }
-            else
-            {
-                throw new ArgumentOutOfRangeException(fieldName);
-            }
+            _thisInstance.cacheSetField[fieldName](instance, value);
         }
         #endregion
 
         #region Property
         public object GetProperty(object instance, PropertyInfo prop)
         {
-            string propName = prop.Name;
-            return GetProperty(instance, propName);
+            return _thisInstance.GetProperty(instance, prop.Name);
         }
 
         public object GetProperty(object instance, string propName)
         {
-            if (cacheGetProperty.ContainsKey(propName))
-            {
-                return cacheGetProperty[propName](instance);
-            }
-            return null;
+            return _thisInstance.cacheGetProperty[propName](instance);
         }
 
         public void SetProperty(object instance, PropertyInfo prop, object value)
         {
-            string propName = prop.Name;
-            SetProperty(instance, propName, value);
+            _thisInstance.SetProperty(instance, prop.Name, value);
         }
 
         public void SetProperty(object instance, string propName, object value)
         {
-            if (cacheSetProperty.ContainsKey(propName))
-            {
-                cacheSetProperty[propName](instance, value);
-            }
-            else
-            {
-                throw new ArgumentOutOfRangeException(propName);
-            }
+            _thisInstance.cacheSetProperty[propName](instance, value);
+            
         }
         #endregion
 
