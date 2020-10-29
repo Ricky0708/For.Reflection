@@ -39,6 +39,7 @@ you can use it to make your value injector or any component...
             List<Core.delgGetProperty> getters = new List<Core.delgGetProperty>();
             PropertyInfo[] propertyInfos = fromObj.GetType().GetProperties();
 
+
             for (int i = 0; i < propertyInfos.Count(); i++)
             {
                 setters.Add(Core.GenSetPropertyValueDelg(o, propertyInfos[i]));
